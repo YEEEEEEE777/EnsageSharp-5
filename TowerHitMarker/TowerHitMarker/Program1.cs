@@ -61,17 +61,18 @@ namespace TowerHitMarker
             foreach (var creep in creeps)
             {
 
-                if ((creep.IsAlive && creep.IsVisible)
-                    && (((creep.IsMelee && (creep.Health % 98.2142857 > damage * (1 - creep.DamageResist)))
-                    || creep.IsRanged && (creep.Health % 110 > damage * (1 - creep.DamageResist)))
+                if ((creep.IsAlive && creep.IsVisible) //Check creep is alive and visible
+                    && (((creep.IsMelee && (creep.Health % 98.2142857 > damage * (1 - creep.DamageResist))) 
+                    || ((creep.IsRanged && creep.AttackRange == 690) && (creep.Health % 160 > damage * (1 - creep.DamageResist)))
+                    || ((creep.IsRanged && creep.AttackRange != 690) && (creep.Health % 110 > damage * (1 - creep.DamageResist))))
                     || creep.Health < damage * (1 - creep.DamageResist)))
-
+                                        
                 {
                     var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 5, HUDInfo.GetHpBarSizeY(creep) - 10);
                     var size = new Vector2(15, 15);
-                    var text = string.Format("{0}", (float)creep.DamageResist);
-                    Drawing.DrawRect(start, new Vector2(size.Y, size.X), Drawing.GetTexture("materials/ensage_ui/other/active_coin.vmat"));
+                    //var text = string.Format("{0} - {1} - {2}", creep.UnitType, creep.UnitState, creep.AttackRange); //Debugging Purposes
                     //Drawing.DrawText(text, start, Color.White, FontFlags.None);
+                    Drawing.DrawRect(start, new Vector2(size.Y, size.X), Drawing.GetTexture("materials/ensage_ui/other/active_coin.vmat"));
                 }
 
 

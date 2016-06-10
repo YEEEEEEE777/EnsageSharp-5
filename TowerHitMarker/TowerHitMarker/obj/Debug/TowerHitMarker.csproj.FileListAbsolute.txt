@@ -18,3 +18,14 @@ C:\Users\Eternal\Documents\Visual Studio 2015\Projects\TowerHitMarker\LastHitMar
 C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\LastHitMarker.exe.config
 C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\obj\Debug\LastHitMarker.exe
 C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\obj\Debug\LastHitMarker.pdb
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\LastHitMarker.exe
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\LastHitMarker.pdb
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\Ensage.Common.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\Ensage.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\Ensage.Menu.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\SharpDX.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\EnsageSharp.Sandbox.dll
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\Ensage.Common.pdb
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\Ensage.Menu.pdb
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\obj\Debug\TowerHitMarker.csprojResolveAssemblyReference.cache
