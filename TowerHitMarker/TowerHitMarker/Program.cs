@@ -66,7 +66,7 @@ namespace TowerHitMarker
                     || creep.Health < damage * (1 - creep.DamageResist) + 1)
                     )
                 {
-                    var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 4, HUDInfo.GetHpBarSizeY(creep) - 10);
+                    var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 5, HUDInfo.GetHpBarSizeY(creep) - 10);
                     var size = new Vector2(15, 15);
                     Drawing.DrawRect(start, new Vector2(size.Y, size.X), Drawing.GetTexture("materials/ensage_ui/other/active_coin.vmat"));
 
