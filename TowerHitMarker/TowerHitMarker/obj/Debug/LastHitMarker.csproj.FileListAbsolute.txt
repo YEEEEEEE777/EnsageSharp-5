@@ -1,0 +1,14 @@
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.exe.config
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.exe
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.pdb
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\LastHitMarker.csprojResolveAssemblyReference.cache
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\LastHitMarker.exe
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\LastHitMarker.pdb
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Common.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Menu.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\SharpDX.Direct3D9.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\SharpDX.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\EnsageSharp.Sandbox.dll
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Common.pdb
+c:\users\eternal\documents\visual studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Menu.pdb

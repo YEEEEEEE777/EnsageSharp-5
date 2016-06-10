@@ -1,0 +1,20 @@
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\LastHitMarker.exe
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\LastHitMarker.pdb
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.exe.config
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.exe
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\LastHitMarker.pdb
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Common.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Menu.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\SharpDX.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\EnsageSharp.Sandbox.dll
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Common.pdb
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\bin\Debug\Ensage.Menu.pdb
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\LastHitMarker\LastHitMarker\obj\Debug\TowerHitMarker.csprojResolveAssemblyReference.cache
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\TowerHitMarker\LastHitMarker\bin\Debug\LastHitMarker.exe.config
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\TowerHitMarker\LastHitMarker\obj\Debug\LastHitMarker.exe
+C:\Users\Eternal\Documents\Visual Studio 2015\Projects\TowerHitMarker\LastHitMarker\obj\Debug\LastHitMarker.pdb
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\bin\Debug\LastHitMarker.exe.config
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\obj\Debug\LastHitMarker.exe
+C:\Users\Eternal\Documents\GitHub\EnsageSharp\TowerHitMarker\TowerHitMarker\obj\Debug\LastHitMarker.pdb
