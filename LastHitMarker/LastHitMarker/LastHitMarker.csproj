@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AB52A2CF-1A40-424C-BCD6-3A299910915A}</ProjectGuid>
+    <ProjectGuid>{945FF21B-50A3-4E00-BA55-3A1E4B65D2C0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LastHitMarker</RootNamespace>
