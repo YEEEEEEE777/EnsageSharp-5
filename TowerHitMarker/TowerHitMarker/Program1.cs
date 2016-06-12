@@ -14,12 +14,12 @@ using SharpDX.Direct3D9;
 
 
 
-namespace TowerHitMarker
+namespace LastHitMarker
 {
     internal class Program
     {
 
-        private static readonly Menu Menu = new Menu("TowerHit Marker", "TowerHitMarker", true);
+        private static readonly Menu Menu = new Menu("LastHit Marker", "LastHitMarker", true);
         private static readonly Dictionary<Unit, string> CreepsDictionary = new Dictionary<Unit, string>();
 
 
