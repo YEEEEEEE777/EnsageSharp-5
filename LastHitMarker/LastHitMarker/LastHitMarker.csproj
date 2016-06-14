@@ -60,27 +60,25 @@
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.dll</HintPath>
+      <HintPath>C:\Users\Eternal\Downloads\PlaySharp\System\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.Common.dll</HintPath>
+      <HintPath>C:\Users\Eternal\Downloads\PlaySharp\System\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Menu">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.Menu.dll</HintPath>
+      <HintPath>C:\Users\Eternal\Downloads\PlaySharp\System\Ensage.Menu.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Users\Eternal\Downloads\PlaySharp\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Users\Eternal\Downloads\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -92,13 +90,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program1.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="LastHitMarker_TemporaryKey.pfx" />
-    <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
