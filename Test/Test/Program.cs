@@ -57,6 +57,7 @@ namespace Test
 
             string path1 = System.IO.Path.GetDirectoryName(new System.Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 
+            
 
             Console.WriteLine(path1);
 
