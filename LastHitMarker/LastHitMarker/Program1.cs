@@ -89,7 +89,7 @@ namespace LastHitMarker
                         towerType = "active";
                         TowersDictionary.Add(tower, towerType);
                     }
-                    else if (tower.Health <= 80 + maxDamage * (1 - tower.DamageResist) * 0.5)
+                    else if (tower.Health <= 2 * (maxDamage * (1 - tower.DamageResist) * 0.5))
                     {
                         if (TowersDictionary.TryGetValue(tower, out towerType)) continue;
                         towerType = "passive";
