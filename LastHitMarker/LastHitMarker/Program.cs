@@ -29,7 +29,7 @@ namespace LastHitMarker
 
 
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
