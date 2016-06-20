@@ -92,6 +92,7 @@
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
+
         public bool TryKillsteal(Hero me, float ping, Hero[] enemyHeroes)
         {
             if (this.possibleTarget == null || !this.possibleTarget.IsValid || !this.possibleTarget.CanDie()
@@ -145,6 +146,7 @@
                     continue;
                 }
 
+
                 if (!ability.CanHit(this.possibleTarget, MyHeroInfo.Position, name)
                     || (name == "zuus_thundergods_wrath"
                         && (1
@@ -168,7 +170,7 @@
                     if (this.possibleTarget.Health - Variables.DealtDamage <= 0)
                     {
                         Utils.Sleep(
-                            (ability.GetHitDelay(this.possibleTarget, name) * 1000) + 500, 
+                            (ability.GetHitDelay(this.possibleTarget, name) * 1000) + 500,
                             this.possibleTarget.Handle + "KillSteal");
                     }
                 }
@@ -189,6 +191,13 @@
                     Utils.Sleep(delay + ping + 200, "calculate");
                 }
 
+                /*
+                if (name == "axe_culling_blade")
+                {
+                    DelayAction.Add(285, AxeUlt);
+                }
+                */
+
                 if (name == "item_ethereal_blade")
                 {
                     // Variables.EtherealHitTime =
@@ -204,7 +213,7 @@
                         (float)(Utils.TickCount + (me.GetTurnTime(this.possibleTarget) * 1000) + ping);
                     Utils.Sleep(
                         (me.GetTurnTime(this.possibleTarget) * 1000) + 100
-                        + ((MyHeroInfo.Position.Distance2D(this.possibleTarget) / 1200) * 1000) + ping, 
+                        + ((MyHeroInfo.Position.Distance2D(this.possibleTarget) / 1200) * 1000) + ping,
                         "calculate");
                 }
 
@@ -212,19 +221,19 @@
                 {
                     Utils.Sleep(
                         (me.GetTurnTime(this.possibleTarget) * 1000)
-                        + ((MyHeroInfo.Position.Distance2D(this.possibleTarget) / 675) * 1000), 
+                        + ((MyHeroInfo.Position.Distance2D(this.possibleTarget) / 675) * 1000),
                         "GlobalCasting");
                 }
 
                 var hitDelay = ability.GetHitDelay(this.possibleTarget, name);
                 Utils.Sleep(delay, handleString);
                 Utils.Sleep(
-                    ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000, 
+                    ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000,
                     "GlobalCasting");
                 Utils.Sleep((hitDelay * 1000) + 200, "calculate");
                 Utils.Sleep(
-                    ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000, 
-                    "casting");
+                                    ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000,
+                                    "casting");
                 Utils.Sleep(delay, "cancelorder");
                 this.targetFindSleeper.Sleep((float)((hitDelay * 1000) + 400));
                 return true;
@@ -258,6 +267,35 @@
         /// <returns>
         ///     The <see cref="bool" />.
         /// </returns>
+
+        private void AxeUlt()
+        {
+            int[] rDmg = new int[3] { 250, 325, 400 };
+            var me = ObjectManager.LocalHero;
+
+            if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
+            {
+                rDmg = new int[3] { 300, 425, 550 };
+            }
+            else
+            {
+                rDmg = new int[3] { 250, 325, 400 };
+            }
+
+            var damage = (rDmg[me.Spellbook.Spell4.Level - 1]);
+
+            if (this.possibleTarget.Health > damage)
+            {
+
+                this.possibleTarget = null;
+                me.Stop();
+                Utils.Sleep(300, this.possibleTarget.Handle + "KillSteal");
+            }
+
+        }
+
+        //Utils.Sleep(100, this.possibleTarget.Handle + "KillSteal");
+
         private bool PurificationUsage(string name, Ability ability, Hero me, float ping, string handleString)
         {
             if (!MainMenu.Menu.Item("nukesToggler").GetValue<AbilityToggler>().IsEnabled(name)
@@ -292,12 +330,12 @@
             }
 
             Utils.Sleep(
-                (ability.GetCastDelay(me, this.possibleTarget, abilityName: name) * 1000) + ping + 100, 
+                (ability.GetCastDelay(me, this.possibleTarget, abilityName: name) * 1000) + ping + 100,
                 handleString);
             Utils.Sleep(ability.GetCastDelay(me, this.possibleTarget, abilityName: name) * 1000, "GlobalCasting");
             Utils.Sleep(ability.GetHitDelay(this.possibleTarget, name) * 1000, "calculate");
             Utils.Sleep(
-                ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000, 
+                ability.GetCastDelay(me, this.possibleTarget, useCastPoint: false, abilityName: name) * 1000,
                 "casting");
             Utils.Sleep(ability.GetCastDelay(me, this.possibleTarget, abilityName: name) * 1000, "cancelorder");
             return true;

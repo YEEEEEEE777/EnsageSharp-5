@@ -56,16 +56,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>C:\PlaySharp\System\Ensage.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PlaySharp2\System\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>C:\PlaySharp\System\Ensage.Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PlaySharp2\System\Ensage.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ensage.Menu">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PlaySharp2\System\Ensage.Menu.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\PlaySharp\System\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PlaySharp2\System\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\PlaySharp\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\PlaySharp2\System\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

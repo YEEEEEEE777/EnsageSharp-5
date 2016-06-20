@@ -102,6 +102,7 @@
 
                     var textt = hits.ToString(CultureInfo.InvariantCulture) + ((hits > 1) ? " hits" : " hit");
                     var hpbarpositionX = HUDInfo.GetHPbarPosition(hero).X;
+                    var hpbarpositionY = HUDInfo.GetHPbarPosition(hero).Y;
                     var s = (hits > 0) ? textt : "KILL";
                     var h = "(" + Math.Floor(hero.Health - dmg - outdmg) + ")";
                     var isi =
@@ -117,16 +118,17 @@
                             (hpbarpositionX + 4
                              + (HpBar.SizeX * ((float)hero.Health * 1000 / hero.MaximumHealth)) / 1000), 
                             (int)(HUDInfo.GetHPbarPosition(hero).Y - 2));
+                    var textPos2 = new Vector2(hpbarpositionX, hpbarpositionY - 24);
                     Drawing.DrawText(
                         s, 
-                        textPos, 
-                        new Vector2(hpbary + 4 + isi, 1), 
+                        textPos2, 
+                        new Vector2(hpbary + 8 + isi, 1), 
                         (hits > 0) ? Color.White : new Color(100, 225, 110), 
                         FontFlags.AntiAlias);
                     Drawing.DrawText(
                         h, 
-                        textPos + new Vector2(textSize.X + 2, 1), 
-                        new Vector2(hpbary + 2 + isi, 1), 
+                        textPos2 + new Vector2(textSize.X + 15, 1), 
+                        new Vector2(hpbary + 8 + isi, 1), 
                         (hits > 0) ? Color.LightGoldenrodYellow : Color.YellowGreen, 
                         FontFlags.AntiAlias);
                 }
