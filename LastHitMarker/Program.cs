@@ -70,6 +70,12 @@ namespace LastHitMarker
                     minDamageCreep = me.MinimumDamage * 1.4 + me.BonusDamage;
                     maxDamageCreep = me.MaximumDamage * 1.4 + me.BonusDamage;
                 }
+
+                else
+                {
+                    minDamageCreep = minDamage;
+                    maxDamageCreep = maxDamage;
+                }
             }
 
             else
@@ -84,6 +90,11 @@ namespace LastHitMarker
                 {
                     minDamageCreep = me.MinimumDamage * 1.15 + me.BonusDamage;
                     maxDamageCreep = me.MaximumDamage * 1.15 + me.BonusDamage;
+                }
+                else
+                {
+                    minDamageCreep = minDamage;
+                    maxDamageCreep = maxDamage;
                 }
             }
 
@@ -145,6 +156,7 @@ namespace LastHitMarker
                     var mana = new int[5] { 0, 28, 40, 52, 64 };
                     var manaBurn = new int[5] { 0, 16, 24, 31, 38 };
 
+                    
                     //Anti-Mage exception with ManaBurn
                     if (me.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && me.Spellbook.Spell1.Level > 0 && creep.Health > 0 && (creep.Mana > mana[me.Spellbook.Spell1.Level]) && creep.Health < (minDamageCreep * (1 - creep.DamageResist)) + manaBurn[me.Spellbook.Spell1.Level])
                     {
@@ -152,11 +164,10 @@ namespace LastHitMarker
                         creepType = "active";
                         CreepsDictionary.Add(creep, creepType);
                     }
-
-
-                    else if (creep.Health > 0 && creep.Health < minDamageCreep * (1 - creep.DamageResist) * ((creep.AttackRange == 690) ? 0.5 : 1)) //Is last hittable.
+                                                           
+                    if (creep.Health > 0 && creep.Health < minDamageCreep * (1 - creep.DamageResist) * ((creep.AttackRange == 690) ? 0.5 : 1)) //Is last hittable.
                     {
-                        // if (!CreepsDictionary.TryGetValue(creep, out creepType) || creepType != "prime") continue; //Not a creep or not primed skip 
+                        //if (!CreepsDictionary.TryGetValue(creep, out creepType) || creepType != "prime") continue; //Not a creep or not primed skip 
                         CreepsDictionary.Remove(creep); //Remove Primed Key from the creep and set it to active.
                         creepType = "active";
                         CreepsDictionary.Add(creep, creepType);
