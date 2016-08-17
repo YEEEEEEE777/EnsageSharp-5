@@ -30,7 +30,7 @@ namespace LastHitMarker
         private static int maxDamage;
         private static double maxDamageCreep;
         private static double minDamageCreep;
-       
+
 
         private static void Main(string[] args)
         {
@@ -156,10 +156,10 @@ namespace LastHitMarker
                     var mana = new int[5] { 0, 28, 40, 52, 64 };
                     var manaBurn = new int[5] { 0, 16, 24, 31, 38 };
 
-                    
+
                     //Anti-Mage exception with ManaBurn
                     if (me.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && creep.Mana > 0 && me.Spellbook.Spell1.Level > 0 && creep.Health > 0)
-                    {                       
+                    {
                         if (creep.Health < (minDamageCreep * (1 - creep.DamageResist)) + manaBurn[me.Spellbook.Spell1.Level])
                         {
                             CreepsDictionary.Remove(creep); //Remove Primed Key from the creep and set it to active.
@@ -168,14 +168,14 @@ namespace LastHitMarker
                         }
 
                         else if ((allyTowers.Exists(tower => (creep.Distance2D(tower) < 750))) && (creep.Mana > mana[me.Spellbook.Spell1.Level]) && creep.Health % 110 > (minDamageCreep * (1 - creep.DamageResist)) + manaBurn[me.Spellbook.Spell1.Level])
-                        {                            
+                        {
                             //if (CreepsDictionary.TryGetValue(creep, out creepType)) continue; //If it is a creep
                             CreepsDictionary.Remove(creep);
-                           creepType = "prime";
+                            creepType = "prime";
                             CreepsDictionary.Add(creep, creepType);
                         }
                     }
-                                                                               
+
                     else if (creep.Health > 0 && creep.Health < minDamageCreep * (1 - creep.DamageResist) * ((creep.AttackRange == 690) ? 0.5 : 1)) //Is last hittable.
                     {
                         //if (!CreepsDictionary.TryGetValue(creep, out creepType) || creepType != "prime") continue; //Not a creep or not primed skip 
@@ -188,8 +188,7 @@ namespace LastHitMarker
                     else if ((allyTowers.Exists(tower => (creep.Distance2D(tower) < 750))) && ((creep.IsMelee && (creep.Health % 98.2142857 > minDamageCreep * (1 - creep.DamageResist)))
                             || ((creep.IsRanged && creep.AttackRange == 690) && (creep.Health % 165 > minDamageCreep * (1 - creep.DamageResist) * 0.5))
                             || ((creep.IsRanged && creep.AttackRange != 690) && (creep.Health % 110 > minDamageCreep * (1 - creep.DamageResist)))))
-                    {
-                        Console.WriteLine("Nopers");
+                    {                        
                         //if (CreepsDictionary.TryGetValue(creep, out creepType)) continue; //If it is a creep
                         CreepsDictionary.Remove(creep);
                         creepType = "prime";
