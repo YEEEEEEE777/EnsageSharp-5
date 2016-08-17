@@ -69,19 +69,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.Common.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Menu">
       <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.Menu.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -26,14 +26,17 @@ namespace LastHitMarker
         private static readonly Menu Menu = new Menu("LastHit Marker", "LastHitMarker", true);
         private static readonly Dictionary<Unit, string> CreepsDictionary = new Dictionary<Unit, string>();
         private static readonly Dictionary<Building, string> TowersDictionary = new Dictionary<Building, string>();
-
-
+        private static int minDamage;
+        private static int maxDamage;
+        private static double maxDamageCreep;
+        private static double minDamageCreep;
+       
 
         private static void Main(string[] args)
         {
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Menu.AddItem(new MenuItem("PB.Enable", "Enable")).SetValue(true);
+            Menu.AddItem(new MenuItem("Enable", "Enable")).SetValue(true);
             Menu.AddToMainMenu();
         }
 
@@ -42,17 +45,48 @@ namespace LastHitMarker
             if (!Game.IsInGame || Game.IsPaused)
                 return;
 
-            if (!Menu.Item("PB.Enable").GetValue<bool>())
+            if (!Menu.Item("Enable").GetValue<bool>())
                 return;
 
             var player = ObjectManager.LocalPlayer;
             var me = player.Hero;
-            var quellingBlade = me.FindItem(" item_quelling_blade ");
-	    var talon = me.FindItem(" item_iron_talon ");
-            var minDamage = me.MinimumDamage + me.BonusDamage;
-            var maxDamage = me.MaximumDamage + me.BonusDamage;
-            var minDamageCreep = ((quellingBlade != null) || (talon != null)) ? (me.MinimumDamage * 1.4) + me.BonusDamage : minDamage;
-            var maxDamageCreep = ((quellingBlade != null) || (talon != null)) ? (me.MaximumDamage * 1.4) + me.BonusDamage : maxDamage;
+            var battleFury = me.HasItem(ClassID.CDOTA_Item_Battlefury);
+            var quellingBlade = me.HasItem(ClassID.CDOTA_Item_QuellingBlade);
+            var talon = me.HasItem(ClassID.CDOTA_Item_Iron_Talon);
+            minDamage = me.MinimumDamage + me.BonusDamage;
+            maxDamage = me.MaximumDamage + me.BonusDamage;
+
+            //Damage Calculation for Melee and Ranged Quelling Blade Modification
+            if (me.IsMelee)
+            {
+                if (battleFury)
+                {
+                    minDamageCreep = me.MinimumDamage * 1.6 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage * 1.6 + me.BonusDamage;
+                }
+
+                else if (quellingBlade || talon)
+                {
+                    minDamageCreep = me.MinimumDamage * 1.4 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage * 1.4 + me.BonusDamage;
+                }
+            }
+
+            else
+            {
+                if (battleFury)
+                {
+                    minDamageCreep = me.MinimumDamage * 1.25 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage * 1.25 + me.BonusDamage;
+                }
+
+                else if (quellingBlade || talon)
+                {
+                    minDamageCreep = me.MinimumDamage * 1.15 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage * 1.15 + me.BonusDamage;
+                }
+            }
+
 
 
             //List of Allied Tier 1 Towers
@@ -107,7 +141,20 @@ namespace LastHitMarker
                 if (creep.IsAlive && creep.IsVisible && (creep.Distance2D(me) < 2000))
                 {
                     string creepType;
-                    if (creep.Health > 0 && creep.Health < minDamageCreep * (1 - creep.DamageResist) * ((creep.AttackRange == 690) ? 0.5 : 1)) //Is last hittable.
+
+                    var mana = new int[5] { 0, 28, 40, 52, 64 };
+                    var manaBurn = new int[5] { 0, 16, 24, 31, 38 };
+
+                    //Anti-Mage exception with ManaBurn
+                    if (me.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && me.Spellbook.Spell1.Level > 0 && creep.Health > 0 && (creep.Mana > mana[me.Spellbook.Spell1.Level]) && creep.Health < (minDamageCreep * (1 - creep.DamageResist)) + manaBurn[me.Spellbook.Spell1.Level])
+                    {
+                        CreepsDictionary.Remove(creep); //Remove Primed Key from the creep and set it to active.
+                        creepType = "active";
+                        CreepsDictionary.Add(creep, creepType);
+                    }
+
+
+                    else if (creep.Health > 0 && creep.Health < minDamageCreep * (1 - creep.DamageResist) * ((creep.AttackRange == 690) ? 0.5 : 1)) //Is last hittable.
                     {
                         // if (!CreepsDictionary.TryGetValue(creep, out creepType) || creepType != "prime") continue; //Not a creep or not primed skip 
                         CreepsDictionary.Remove(creep); //Remove Primed Key from the creep and set it to active.
@@ -162,7 +209,7 @@ namespace LastHitMarker
                 switch (towerType)
                 {
                     case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
-                    case "passive": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;                        
+                    case "passive": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
                 }
 
             }
@@ -171,8 +218,6 @@ namespace LastHitMarker
             {
                 //Vector2 screenPos;
                 var enemyPos = creep.Position + new Vector3(0, 0, creep.HealthBarOffset);
-                //if (!Drawing.WorldToScreen(enemyPos, out screenPos)) continue; // If enemy position is not on screen continue.
-
                 var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 5, HUDInfo.GetHpBarSizeY(creep) - 10);
                 var size = new Vector2(15, 15);
                 var greenText = Drawing.GetTexture("materials/vgui/hud/hud_timer_full.vmat");
@@ -186,7 +231,7 @@ namespace LastHitMarker
                 switch (creepType)
                 {
                     case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
-                    case "prime": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;                       
+                    case "prime": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
                 }
             }
         }
