@@ -1,0 +1,144 @@
+/*---------------------------------------------
+        WebClient pbClient = new WebClient();
+
+        
+        Player player = ObjectManager.LocalPlayer;
+                    if (player.Team != Team.Observer)
+        {
+            if ((Menu.Item("Allies Enable").GetValue<bool>()) ^ (Menu.Item("Enemies Enable").GetValue<bool>()))
+            {
+                if ((Menu.Item("Allies Enable").GetValue<bool>()))
+                {
+                    players = ObjectManager.GetEntities<Player>().Where(x => x.Team == player.Team).OrderBy(p => p.ID).ToList();
+                }
+                else
+                {
+                    players = ObjectManager.GetEntities<Player>().Where(x => x.Team != player.Team).OrderBy(p => p.ID).ToList();
+                }
+            }
+
+            else if ((Menu.Item("Allies Enable").GetValue<bool>()) && (Menu.Item("Enemies Enable").GetValue<bool>()))
+            {
+                players = ObjectManager.GetEntities<Player>().Where(x => x.Team != Team.Observer).OrderBy(p => p.ID).ToList();
+            }
+
+            else return;
+        }
+
+        else players = ObjectManager.GetEntities<Player>().Where(x => x.Team != Team.Observer).OrderBy(p => p.ID).ToList();
+
+
+
+        try
+        {
+        foreach (var p in players)
+        {
+            int position = 6; //Instantiated to 6 so default position is "N/A", number is arbitrary.
+            string role;
+
+            string steamID = p.PlayerSteamID.ToString();
+            var personalURL = "https://yasp.co/players/" + steamID + "/counts";
+            string data = pbClient.DownloadString(personalURL);
+
+            string mmrBegin = "<abbr title=\"Solo MMR\">";
+            string mmrEnd = "</small></span><span class=\"text";
+            string potMMRBegin = "<abbr title=\"MMR estimate based on available data from peer players. This is an estimate of the population mean MMR of the recent matches played by this user.\">";
+            string potMMREnd = "</small></span></h4></div><d"; //"</abbr></span></" OLD STRING.
+            string winRateBegin = "6.88</a></td><td class=\"rankable\">";
+            string winRateBegin2 = "</td><td class=\"rankable\"><div>";
+            string winRateEnd = "</td></tr></tbody></table></div></";
+            string winRateEnd2 = "</div>";
+
+            string roleBegin1 = "Safe</a></td><td class=\"rankable\">"; //safe
+            string roleBegin2 = "Mid</a></td><td class=\"rankable\">"; //mid
+            string roleBegin3 = "Off</a></td><td class=\"rankable\">"; //off            
+            string roleBegin4 = "Jungle</a></td><td class=\"rankable\">"; //jungle
+            string roleEnd = "</td>";
+
+            string mmr = StripHTML(ExtractString(data, mmrBegin, mmrEnd));
+            string potMMR = StripHTML(ExtractString(data, potMMRBegin, potMMREnd));
+            string winRate = TruncateorNAWR(StripHTML(ExtractString(ExtractString(data, winRateBegin, winRateEnd), winRateBegin2, winRateEnd2)));
+
+            mmr = MMRNotAvailable(mmr); //MMR N/A set to "".     
+            potMMR = MMRNotAvailable(potMMR); //potMMR N/A set to "".                          
+            string trueMMR = CompareMMR(mmr, potMMR); //True MMR is the larger of mmr and potMMR else N/A.
+
+            string role1 = StripHTML(ExtractString(data, roleBegin1, roleEnd));
+            string role2 = StripHTML(ExtractString(data, roleBegin2, roleEnd));
+            string role3 = StripHTML(ExtractString(data, roleBegin3, roleEnd));
+            string role4 = StripHTML(ExtractString(data, roleBegin4, roleEnd));
+
+            List<string> maxValueString = new List<string> { role1, role2, role3, role4 };
+            List<int> maxValue = new List<int>();
+
+            foreach (string s in maxValueString)
+            {
+                int j;
+                Int32.TryParse(s, out j);
+                maxValue.Add(j);
+            }
+
+            position = TruePosition(winRate, maxValue);
+
+            switch (position)
+            {
+                case 0:
+                    role = "[1/5]";
+                    break;
+                case 1:
+                    role = "[2]";
+                    break;
+                case 2:
+                    role = "[3]";
+                    break;
+                case 3:
+                    role = "[4]";
+                    break;
+                default:
+                    role = "disN/A";
+                    break;
+            }
+
+            MMRDict.Add(p.PlayerSteamID, trueMMR);
+            WRDict.Add(p.PlayerSteamID, winRate);
+            RoleDict.Add(p.PlayerSteamID, role);
+
+            Console.WriteLine("--------------------------");
+            Console.WriteLine("Name:" + " " + p.Name);
+            Console.WriteLine("True MMR:" + " " + trueMMR);
+            //Console.WriteLine("Potential MMR:" + potMMR);
+            //Console.WriteLine("MMR:" + " " + mmr);
+            Console.WriteLine("Win:" + " " + winRate + "%");
+            Console.WriteLine("Role:" + " " + role);
+            Console.WriteLine("ID:" + " " + p.ID);
+
+            await Task.Delay(200 + Menu.Item("Loading").GetValue<Slider>().Value).Wait();
+
+
+            //System.Threading.Thread.Sleep(new TimeSpan(0, 0, 0));
+
+            
+            Timer timer = new Timer();
+            timer.Interval = 20; // milliseconds
+            timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
+            timer.AutoReset = true; // if not set you will need to call start after every event fired in the elapsed callback
+            timer.Start();
+            
+
+        //Task.WaitAll(Task.Delay(20));
+        //System.Threading.Thread.Sleep(200 + Menu.Item("Loading").GetValue<Slider>().Value); //250 works for certain.     
+
+    }
+            catch (Exception e)
+            {
+                Console.WriteLine(e + e.StackTrace);
+            }
+            finally
+            {
+                if (pbClient is IDisposable) ((IDisposable)pbClient).Dispose();
+            }
+            _isExecutedFirst = true;
+    
+        }
+    }
+    --------------------------*/
