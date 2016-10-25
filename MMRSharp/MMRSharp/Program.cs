@@ -155,8 +155,6 @@ namespace MMRSharp
         }
 
 
-
-        //[PermissionSet(SecurityAction.Assert, Unrestricted = true)]
         private static void Drawing_OnEndScene(EventArgs args)
         {
             Player player = ObjectManager.LocalPlayer;
@@ -217,10 +215,13 @@ namespace MMRSharp
             }
             */
 
+            //Game.PrintMessage("<font color='#00aaff'>" + String.Format("{0, -2} | {1, -4} | {2, -3}% | {3, -4}", p.ID, mmr, wr, role), MessageType.ChatMessage);
+
             if (_isDisplayedFirst && Game.GameState.ToString() != "Loaded")
             {
                 foreach (Player p in players)
                 {
+                    
                     //Player Color.
                     SharpDX.Color playerColor = SelectColor(p.ID);
                     SharpDX.Color textColor = SharpDX.Color.White;
@@ -373,15 +374,16 @@ namespace MMRSharp
                         //Console.WriteLine("MMR:" + " " + mmr);
                         Console.WriteLine("Win:" + " " + winRate + "%");
                         Console.WriteLine("Role:" + " " + role);
-                        Console.WriteLine("ID:" + " " + p.ID);
+                        Console.WriteLine("ID:" + " " + p.ID);                                                
                     }
+                        
 
                 }
 
             }
             _isDisplayedFirst = true;
         }
-        
+
 
 
 
