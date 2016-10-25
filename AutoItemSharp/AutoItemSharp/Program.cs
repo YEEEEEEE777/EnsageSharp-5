@@ -72,15 +72,28 @@ new MenuItem("Enable", "Enable").SetValue(true);
             {
                 Item bottle = me.FindItem("item_bottle");
 
-                if (bottle != null)
-                {
-                    IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= 600 && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration"));
-                    Unit lowestHPAlly = allies.MinOrDefault(x => x.Health);
-                                        
+                
 
-                    if (bottle.Cooldown <= 0 && Utils.SleepCheck("bottle") && lowestHPAlly != null && me.HasModifier("modifier_fountain_aura_buff"))
+                if (bottle != null && bottle.CanBeCasted() && !me.IsInvisible() && !me.IsChanneling())
+                {
+                    IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= 600 && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration") && !x.IsIllusion);
+                                                       
+
+                    if (bottle.Cooldown <= 0 && Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff"))
                     {
-                        bottle.UseAbility(lowestHPAlly);
+                        foreach (Hero ally in allies)
+                        {
+                            if (Utils.SleepCheck("bottle") && ally != null)
+                            {
+                                bottle.UseAbility(ally);
+                                Utils.Sleep(450, "bottle");
+                            }
+                        }
+                    }
+
+                    else if (bottle.Cooldown <= 0 && Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff") && bottle.CurrentCharges == 3 && !me.HasModifier("modifier_bottle_regeneration"))
+                    {
+                        bottle.UseAbility(me);
                         Utils.Sleep(250, "bottle");
                     }
 
@@ -127,7 +140,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     IEnumerable<Unit> monsters = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 800 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned);
                     Unit highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null)
+                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null && !me.IsChanneling() && !me.IsInvisible())
                     {
                         midas.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Midas");
@@ -142,7 +155,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
             {
                 Item phase = me.FindItem("item_phase_boots");
 
-                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && me.IsMoving)
+                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && me.IsMoving && !me.IsChanneling() && !me.IsInvisible())
                 {
                     phase.UseAbility();
                     Utils.Sleep(250, "Phase");
