@@ -58,7 +58,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
             player = ObjectManager.LocalPlayer;
             me = ObjectManager.LocalHero;
 
-            if ((!Menu.Item("Enable").GetValue<bool>()) || !Game.IsInGame || player == null || me == null || Game.IsChatOpen || Game.IsPaused) return;
+            if ((!Menu.Item("Enable").GetValue<bool>()) || !Game.IsInGame || player == null || me == null || Game.IsChatOpen || Game.IsPaused || me.IsChanneling() || me.IsInvisible()) return;
 
             AutoMidas();
             AutoTalon();
@@ -112,7 +112,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     IEnumerable<Unit> monsters = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 600 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned);// && x.UnitType != "Building");
                     Unit highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(me) <= 350 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null)
+                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(me) <= 350 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null )
                     {
                         talon.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Talon");
@@ -140,7 +140,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     IEnumerable<Unit> monsters = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 800 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned);
                     Unit highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null && !me.IsChanneling() && !me.IsInvisible())
+                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null )
                     {
                         midas.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Midas");
@@ -155,7 +155,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
             {
                 Item phase = me.FindItem("item_phase_boots");
 
-                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && me.IsMoving && !me.IsChanneling() && !me.IsInvisible())
+                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && me.IsMoving && !me.IsChanneling() && !me.IsInvisible() )
                 {
                     phase.UseAbility();
                     Utils.Sleep(250, "Phase");
