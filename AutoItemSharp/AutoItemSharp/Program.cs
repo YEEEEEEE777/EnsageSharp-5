@@ -27,6 +27,8 @@ new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
         private static readonly MenuItem EnableKeyItem =
 new MenuItem("Enable", "Enable").SetValue(true);
 
+        private static readonly MenuItem PhaseDistanceItem = new MenuItem("Phase Distance", "Phase Distance").SetValue(new Slider(750, 500, 1000));
+
 
 
         private static Hero me;
@@ -37,14 +39,22 @@ new MenuItem("Enable", "Enable").SetValue(true);
             Menu.AddToMainMenu();
             Menu.AddItem(EnableKeyItem);
             Menu.AddItem(ItemKeyItem);
+            Menu.AddItem(PhaseDistanceItem);
 
             Game.OnUpdate += Game_OnUpdate;
+            Player.OnExecuteOrder += Player_OnExecuteOrder;
         }
 
-
+        private static void Player_OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
+        {
+            if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
+            {
+                AutoPhase();
+            }            
+        }
 
         private static void Game_OnUpdate(EventArgs args)
-        {
+        {            
             player = ObjectManager.LocalPlayer;
             me = ObjectManager.LocalHero;
 
@@ -52,7 +62,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
             AutoMidas();
             AutoTalon();
-            AutoPhase();
+            
         }
 
         private static void AutoTalon()
