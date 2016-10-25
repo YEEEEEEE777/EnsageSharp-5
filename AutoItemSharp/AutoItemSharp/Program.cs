@@ -17,10 +17,10 @@ namespace AutoItemSharp
         private static readonly Menu Menu = new Menu("AutoItemSharp", "AutoItemSharp", true, "item_iron_talon", true);
 
         private static readonly Dictionary<string, bool> itemsDict = new Dictionary<string, bool>
-            {
+            {   { "item_bottle", true },
                 { "item_iron_talon", true },
                 { "item_hand_of_midas", true },
-                { "item_phase_boots", true },
+                { "item_phase_boots", true }
         };
         private static readonly MenuItem ItemKeyItem =
 new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
@@ -50,11 +50,11 @@ new MenuItem("Enable", "Enable").SetValue(true);
             if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
             {
                 AutoPhase();
-            }            
+            }
         }
 
         private static void Game_OnUpdate(EventArgs args)
-        {            
+        {
             player = ObjectManager.LocalPlayer;
             me = ObjectManager.LocalHero;
 
@@ -62,7 +62,30 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
             AutoMidas();
             AutoTalon();
-            
+            AutoBottle();
+
+        }
+
+        private static void AutoBottle()
+        {
+            if (ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_bottle"))
+            {
+                Item bottle = me.FindItem("item_bottle");
+
+                if (bottle != null)
+                {
+                    IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= 600 && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration"));
+                    Unit lowestHPAlly = allies.MinOrDefault(x => x.Health);
+                                        
+
+                    if (bottle.Cooldown <= 0 && Utils.SleepCheck("bottle") && lowestHPAlly != null && me.HasModifier("modifier_fountain_aura_buff"))
+                    {
+                        bottle.UseAbility(lowestHPAlly);
+                        Utils.Sleep(250, "bottle");
+                    }
+
+                }
+            }
         }
 
         private static void AutoTalon()
@@ -76,7 +99,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     IEnumerable<Unit> monsters = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 600 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned);// && x.UnitType != "Building");
                     Unit highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(me) <= 350 && MoreThanAnAttack(highestHPCreep))
+                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(me) <= 350 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null)
                     {
                         talon.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Talon");
@@ -104,7 +127,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     IEnumerable<Unit> monsters = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 800 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned);
                     Unit highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep))
+                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null)
                     {
                         midas.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Midas");
