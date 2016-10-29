@@ -50,7 +50,16 @@ new MenuItem("Enable", "Enable").SetValue(true);
         {
             if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
             {
-                AutoPhase();
+                AutoPhase(me);
+            }
+
+            if (me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick"))
+            {
+                var bear = ObjectManager.GetEntities<Unit>().Where(x => x.IsControllable && x.Name.Contains("npc_dota_lone_druid_bear") && x.IsAlive && !x.IsIllusion && x.IsSpawned && x.Health > 0).FirstOrDefault();
+                if (bear != null)
+                {
+                    if (bear.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value) AutoPhase(bear);
+                }
             }
         }
 
@@ -61,9 +70,10 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
             if ((!Menu.Item("Enable").GetValue<bool>()) || !Game.IsInGame || player == null || me == null || Game.IsChatOpen || Game.IsPaused || me.IsChanneling() || me.IsInvisible()) return;
 
-            AutoMidas();
-            AutoTalon();
+            AutoMidas(me);
+            AutoTalon(me);
             AutoBottle();
+            if (me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick")) Bear();
 
         }
 
@@ -78,38 +88,50 @@ new MenuItem("Enable", "Enable").SetValue(true);
                 if (bottle != null && bottle.CanBeCasted() && !me.IsInvisible() && !me.IsChanneling() && bottle.Cooldown <= 0)
                 {
                     IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= 600 && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration") && !x.IsIllusion);
-                    IEnumerable<Building> fountains = ObjectManager.GetEntities<Building>().Where(x => x.Name == "dota_fountain");
-                    Building fountain = fountains.FirstOrDefault();
+                    IEnumerable<Unit> fountains = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "dota_fountain" && x.Team.Equals(me.Team));
+                    Unit fountain = fountains.MinOrDefault(x => x.Distance2D(me));
 
 
-                    if (Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff"))
+
+
+                    if (Utils.SleepCheck("time") && Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff") && me.Distance2D(fountain) > 1300)
                     {
                         foreach (Hero ally in allies)
                         {
                             if (Utils.SleepCheck("bottle") && ally != null)
                             {
                                 bottle.UseAbility(ally);
+
+                                Utils.Sleep(450, "bottle");
+                            }
+                        }
+
+                        if (me != null)
+                        {
+                            if (Utils.SleepCheck("bottle"))
+                            {
+                                bottle.UseAbility(me);
+
+                                Utils.Sleep(250, "bottle");
+                            }
+                        }
+                        Utils.Sleep(3500, "time");
+                    }
+
+                    else if (Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff"))
+                    {
+                        foreach (Hero ally in allies)
+                        {
+                            if (Utils.SleepCheck("bottle") && ally != null)
+                            {
+                                bottle.UseAbility(ally);
+
                                 Utils.Sleep(450, "bottle");
                             }
                         }
                     }
 
 
-
-                    else if (Utils.SleepCheck("bottle") && me.HasModifier("modifier_fountain_aura_buff") && me.Distance2D(fountain) >= 1200)
-                    {
-                        var start = Game.GameTime;
-
-                        while (Game.GameTime <= start + 3 && Utils.SleepCheck("bottle"))
-                        {
-                            bottle.UseAbility(me);
-                            Utils.Sleep(250, "bottle");
-                            Console.WriteLine(Game.GameTime);
-                        }
-
-
-
-                    }
 
                 }
             }
@@ -128,46 +150,46 @@ new MenuItem("Enable", "Enable").SetValue(true);
             return necroNames.Any(x => x.Equals(creep.Name));
         }
 
-        private static void AutoTalon()
+        private static void AutoTalon(Unit unit)
         {
             if (ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_iron_talon"))
             {
-                Item talon = me.FindItem("item_iron_talon");
+                Item talon = unit.FindItem("item_iron_talon");
 
                 if (talon != null && talon.CanBeCasted())
                 {
-                    IEnumerable<Creep> monsters = ObjectManager.GetEntities<Creep>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 600 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned && !IsNecromonicon(x));
+                    IEnumerable<Creep> monsters = ObjectManager.GetEntities<Creep>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(unit) <= 600 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned && !IsNecromonicon(x));
                     Creep highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(me) <= 350 && MoreThanAnAttack(highestHPCreep) && highestHPCreep != null)
+                    if (talon.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Talon") && highestHPCreep.Distance2D(unit) <= 350 && MoreThanAnAttack(highestHPCreep, unit) && highestHPCreep != null)
                     {
                         talon.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Talon");
-                        me.Attack(highestHPCreep);
+                        unit.Attack(highestHPCreep);
                     }
                 }
             }
         }
 
-        private static bool MoreThanAnAttack(Unit unit)
+        private static bool MoreThanAnAttack(Unit creep, Unit unit)
         {
-            var unitArmor = 1 - ((0.06 * unit.Armor) / (1 + 0.06 * Math.Abs(unit.Armor)));
-            if (unit.Health >= (me.DamageAverage + me.BonusDamage) * (1 - unit.DamageResist) * unitArmor) return true;
+            var unitArmor = 1 - ((0.06 * creep.Armor) / (1 + 0.06 * Math.Abs(creep.Armor)));
+            if (creep.Health >= (unit.DamageAverage + unit.BonusDamage) * (1 - creep.DamageResist) * unitArmor) return true;
             else return false;
         }
 
-        private static void AutoMidas()
+        private static void AutoMidas(Unit unit)
         {
             if (ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_hand_of_midas"))
             {
-                Item midas = me.FindItem("item_hand_of_midas");
+                Item midas = unit.FindItem("item_hand_of_midas");
 
                 if (midas != null && midas.CanBeCasted())
                 {
-                    IEnumerable<Creep> monsters = ObjectManager.GetEntities<Creep>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(me) <= 800 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned && !IsNecromonicon(x));
+                    IEnumerable<Creep> monsters = ObjectManager.GetEntities<Creep>().Where(x => x.Team != me.Team && x.IsAlive && !x.IsAncient && x.Distance2D(unit) <= 800 && x.IsVisible && x.Health > 0 && !x.IsMagicImmune() && x.BaseMovementSpeed > 0 && x.IsSpawned && !IsNecromonicon(x));
                     Creep highestHPCreep = monsters.MaxOrDefault(x => x.Health);
 
-                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(me) <= 600 && highestHPCreep != null)
+                    if (midas.Cooldown <= 0 && monsters.Count() > 0 && Utils.SleepCheck("Midas") && highestHPCreep.Distance2D(unit) <= 600 && highestHPCreep != null)
                     {
                         midas.UseAbility(highestHPCreep);
                         Utils.Sleep(250, "Midas");
@@ -176,13 +198,13 @@ new MenuItem("Enable", "Enable").SetValue(true);
             }
         }
 
-        private static void AutoPhase()
+        private static void AutoPhase(Unit unit)
         {
             if (ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_phase_boots"))
             {
-                Item phase = me.FindItem("item_phase_boots");
+                Item phase = unit.FindItem("item_phase_boots");
 
-                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && me.IsMoving && !me.IsChanneling() && !me.IsInvisible())
+                if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && unit.IsMoving && !unit.IsChanneling() && !unit.IsInvisible())
                 {
                     phase.UseAbility();
                     Utils.Sleep(250, "Phase");
@@ -190,6 +212,18 @@ new MenuItem("Enable", "Enable").SetValue(true);
             }
 
         }
+
+        private static void Bear()
+        {
+            var bear = ObjectManager.GetEntities<Unit>().Where(x => x.IsControllable && x.Name.Contains("npc_dota_lone_druid_bear") && x.IsAlive && !x.IsIllusion && x.IsSpawned && x.Health > 0).FirstOrDefault();
+
+            if ((me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick")) && bear != null)
+            {                
+                AutoMidas(bear);
+                AutoTalon(bear);
+            }
+        }
+
 
 
 
