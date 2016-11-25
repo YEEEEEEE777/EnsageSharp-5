@@ -7,10 +7,8 @@
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Menu;
-    using Ensage.Common.Objects;
-    using SharpDX.Direct3D;
     using SharpDX;
-    using SharpDX.Direct3D9;
+
 
     internal class Program
     {
