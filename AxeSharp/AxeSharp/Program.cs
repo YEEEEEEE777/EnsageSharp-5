@@ -45,7 +45,7 @@
         private static readonly MenuItem ItemKeyItem =
     new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
         private static readonly MenuItem UltRangeItem = new MenuItem("Dunk Range", "Dunk Range").SetValue(new Slider(75, 500, 0));
-        private static readonly MenuItem NumJumpItem = new MenuItem("# of Enemies to Jump", "# of Enemies to Jump").SetValue(new Slider(3, 5, 1));
+        private static readonly MenuItem NumJumpItem = new MenuItem("# of Enemies to Jump", "# of Enemies to Jump").SetValue(new Slider(1, 5, 1));
         private static readonly MenuItem EnableJumpKeyItem =
             new MenuItem("Enable Jump", "Enable Jump").SetValue(true);
 
@@ -335,7 +335,7 @@
 
                     Vector3 midPoint = new Vector3(avgX, avgY, avgZ);
 
-                    HeroEnemyNearbyDictionary.Add(hero, nearbyEnemies);
+                    //HeroEnemyNearbyDictionary.Add(hero, nearbyEnemies);
                     HeroJumpPosDictionary.Add(hero, midPoint);
 
                     if (nearbyEnemies >= Menu.Item("# of Enemies to Jump").GetValue<Slider>().Value)
@@ -355,9 +355,10 @@
                         HeroJumpPosDictionary.Clear();
                         HeroEnemyNearbyDictionary.Clear();
                     }
+                    HeroJumpPosDictionary.Clear();
+                    HeroEnemyNearbyDictionary.Clear();
                 }
-                HeroJumpPosDictionary.Clear();
-                HeroEnemyNearbyDictionary.Clear();
+                
             }
         }
 
@@ -374,7 +375,7 @@
 
             if (!(call.Level > 0) && !(helix.Level > 0)) return;
 
-            var holdDur = TauntDur[Convert.ToInt32(me.Spellbook.Spell1.Level - 1)];
+            var holdDur = TauntDur[Convert.ToInt32(call.Level - 1)];
             //var regen = me.HealthRegeneration; // ADD THIS IN SOMEDAY.
 
 
