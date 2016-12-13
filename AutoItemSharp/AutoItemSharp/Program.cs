@@ -82,7 +82,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
                 AutoMidas(me);
                 AutoTalon(me);
                 AutoBottle();
-                AutoBasillius();
+                AutoBasilius();
 
 
                 if (me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick"))
@@ -97,10 +97,10 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
         }
 
-        private static void AutoBasillius()
+        private static void AutoBasilius()
         {
             if (!ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_ring_of_basilius") || !me.IsAlive) return;
-            if (!me.IsAlive) return;
+            if (!me.IsAlive || Game.GameTime > 600) return;
 
             Item bas = me.FindItem("item_ring_of_basilius");
             Item aqu = me.FindItem("item_ring_of_aquila");
@@ -158,8 +158,6 @@ new MenuItem("Enable", "Enable").SetValue(true);
             }
 
 
-            //item_ring_of_basilius
-            //item_ring_of_aquila
         }
 
         private static double CreepEHPCalculation(Creep creep)
@@ -378,18 +376,24 @@ new MenuItem("Enable", "Enable").SetValue(true);
                     cutRange = 650;
                 }
 
+                Unit eye = ObjectManager.GetEntitiesParallel<Unit>().Where(x => x.ClassID == ClassID.CDOTA_NPC_Treant_EyesInTheForest).FirstOrDefault();
+                //Console.WriteLine(eye.Name);
+                
+
                 Unit ward = ObjectManager.GetEntities<Unit>()
                     .FirstOrDefault(
                         x =>
                             (x.ClassID == ClassID.CDOTA_NPC_Observer_Ward ||
                              x.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight || x.ClassID == ClassID.CDOTA_NPC_TechiesMines || x.ClassID == ClassID.CDOTA_NPC_Treant_EyesInTheForest)
-                            && x.Team != me.Team && unit.NetworkPosition.Distance2D(x.NetworkPosition) < cutRange &&
+                             && unit.NetworkPosition.Distance2D(x.NetworkPosition) < cutRange &&
                             x.IsVisible && x.IsAlive);
 
                 if (ward != null && !unit.IsChanneling() && Utils.SleepCheck("cut") && cutter != null && !((cutter.Name == "item_tango_single" || cutter.Name == "item_tango") && ward.ClassID == ClassID.CDOTA_NPC_TechiesMines))
                 {
                     cutter.UseAbility(ward);
+                    cutter.UseAbility(eye);
                     Utils.Sleep(250, "cut");
+
                 }
             }
         }
