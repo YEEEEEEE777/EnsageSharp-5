@@ -21,7 +21,8 @@ namespace AutoItemSharp
 { "item_bottle", true },
                 { "item_iron_talon", true },
                 { "item_hand_of_midas", true },
-                { "item_phase_boots", true }
+                { "item_phase_boots", true },
+                { "item_ring_of_basilius", true}
         };
         private static readonly MenuItem ItemKeyItem =
 new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
@@ -81,6 +82,8 @@ new MenuItem("Enable", "Enable").SetValue(true);
                 AutoMidas(me);
                 AutoTalon(me);
                 AutoBottle();
+                AutoBasillius();
+
 
                 if (me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick"))
                 {
@@ -91,6 +94,89 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
             AutoDeward(me);
 
+
+        }
+
+        private static void AutoBasillius()
+        {
+            if (!ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_ring_of_basilius") || !me.IsAlive) return;
+            if (!me.IsAlive) return;
+
+            Item bas = me.FindItem("item_ring_of_basilius");
+            Item aqu = me.FindItem("item_ring_of_aquila");
+            Item ring = bas != null ? bas : aqu;
+
+
+            
+
+            if ((bas != null || aqu != null))
+            {
+
+                IEnumerable<Creep> creeps = ObjectManager.GetEntitiesParallel<Creep>().Where(x => x.Team == me.Team && x.IsAlive && x.IsVisible && x.IsSpawned && x.Health > 0 && x.Distance2D(me) <= 900);
+                IEnumerable<Hero> enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.Team != me.Team && x.IsAlive && x.Health > 0 && x.IsSpawned && x.IsVisible && x.Distance2D(me) <= 2000);
+
+
+                
+                if (creeps != null && creeps.Any() && enemies != null && enemies.Any())
+                {
+                    
+                    int maxDmg = enemies.Max(x => x.MaximumDamage + x.BonusDamage);
+                    int minDmg = enemies.Min(x => x.MinimumDamage + x.BonusDamage);
+
+                    //No Quelling Blade Support
+                    Console.WriteLine("Min: " + minDmg);
+                    Console.WriteLine("Max: " + maxDmg);
+
+
+                    foreach (Hero enemy in enemies)
+                    {
+
+                        if (creeps.All(creep => !(minDmg < CreepEHPCalculationBas(creep) && CreepEHPCalculationBas(creep) <= maxDmg + 1) && ring.IsToggled == false && Utils.SleepCheck("close")) && creeps != null)
+                        {
+                            Console.WriteLine("Close");
+                            ring.ToggleAbility();
+                            Utils.Sleep(200, "close");
+                        }
+
+
+
+                        foreach (Creep creep in creeps)
+                        {
+                            if (creep.Distance2D(enemy) <= enemy.GetAttackRange() && (minDmg < CreepEHPCalculationBas(creep) && CreepEHPCalculationBas(creep) <= maxDmg + 1))
+                            {
+                                if (Utils.SleepCheck("ring") && ring.IsToggled == true)
+                                {
+                                    Console.WriteLine(ring.Name + " " + ring.IsToggled);
+                                    ring.ToggleAbility();
+                                    Utils.Sleep(200, "ring");
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
+            //item_ring_of_basilius
+            //item_ring_of_aquila
+        }
+
+        private static double CreepEHPCalculation(Creep creep)
+        {
+            double dmgMult = 1 - (0.06 * (creep.BaseArmor)) / (1 + (0.06 * Math.Abs((creep.BaseArmor))));
+            double EHP = creep.Health / dmgMult;
+            return EHP;
+
+            
+
+        }
+
+        private static double CreepEHPCalculationBas(Creep creep)
+        {
+            double dmgMult = 1 - (0.06 * (creep.BaseArmor + 2)) / (1 + (0.06 * Math.Abs((creep.BaseArmor + 2))));
+            double EHP = creep.Health / dmgMult;
+            return EHP;
 
         }
 
@@ -124,7 +210,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
                 if (bottle != null && bottle.CanBeCasted() && !me.IsInvisible() && !me.IsChanneling() && bottle.Cooldown <= 0)
                 {
-                    
+
                     IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= (castRange + 200) && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration") && !x.IsIllusion);
                     Unit myFountain = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "dota_fountain" && x.Team.Equals(me.Team)).MinOrDefault(x => x.Distance2D(me));
 
@@ -141,11 +227,11 @@ new MenuItem("Enable", "Enable").SetValue(true);
                                 }
                             }
                         }
-                       
+
                         else
                         {
                             //Game.GameTime
-                            
+
                             if (Utils.SleepCheck("bottle"))
                             {
                                 bottle.UseAbility(me);
