@@ -288,7 +288,7 @@ namespace MMRSharp
             foreach (var p in players)
             {
                 string steamID = p.PlayerSteamID.ToString();
-                var personalURL = "https://yasp.co/players/" + steamID + "/counts";
+                var personalURL = "https://api.opendota.com/api/players/" + steamID + "/counts";
                 using (HttpClient client = new HttpClient())
 
 
