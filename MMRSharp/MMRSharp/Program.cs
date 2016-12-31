@@ -60,7 +60,7 @@ namespace MMRSharp
 
         private static void Main()
         {
-
+            //Drawing.OnDraw += Drawing_OnDraw;
             Game.OnUpdate += Game_OnUpdate;
             Game.OnWndProc += Game_OnWndProc;
             Drawing.OnEndScene += Drawing_OnEndScene;
@@ -284,13 +284,12 @@ namespace MMRSharp
         private static async void Lookup()
         {
             List<Player> players = ObjectManager.GetEntities<Player>().Where(x => x.Team != Team.Observer).OrderBy(x => x.ID).ToList(); // (x.Team == Team.Radiant || x.Team == Team.Dire)
-            Console.WriteLine("Hi");
+
             foreach (var p in players)
             {
                 string steamID = p.PlayerSteamID.ToString();
                 var personalURL = "https://yasp.co/players/" + steamID + "/counts";
                 using (HttpClient client = new HttpClient())
-
 
                 using (HttpResponseMessage response = await client.GetAsync(personalURL))
                 using (HttpContent content = response.Content)
@@ -375,9 +374,9 @@ namespace MMRSharp
                         //Console.WriteLine("MMR:" + " " + mmr);
                         Console.WriteLine("Win:" + " " + winRate + "%");
                         Console.WriteLine("Role:" + " " + role);
-                        Console.WriteLine("ID:" + " " + p.ID);
+                        Console.WriteLine("ID:" + " " + p.ID);                                                
                     }
-
+                        
 
                 }
 
