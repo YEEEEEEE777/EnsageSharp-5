@@ -22,8 +22,7 @@ namespace AutoItemSharp
                 { "item_iron_talon", true },
                 { "item_hand_of_midas", true },
                 { "item_phase_boots", true },
-                                { "item_ring_of_basilius", true }
-
+                { "item_ring_of_basilius", true}
         };
         private static readonly MenuItem ItemKeyItem =
 new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
@@ -84,7 +83,6 @@ new MenuItem("Enable", "Enable").SetValue(true);
                 AutoTalon(me);
                 AutoBottle();
                 AutoBasilius();
-
 
 
                 if (me.Name.Equals("npc_dota_hero_lone_druid") || me.Name.Equals("npc_dota_hero_rubick"))
@@ -210,7 +208,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
                 if (bottle != null && bottle.CanBeCasted() && !me.IsInvisible() && !me.IsChanneling() && bottle.Cooldown <= 0)
                 {
-                    
+
                     IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= (castRange + 200) && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration") && !x.IsIllusion);
                     Unit myFountain = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "dota_fountain" && x.Team.Equals(me.Team)).MinOrDefault(x => x.Distance2D(me));
 
@@ -227,11 +225,11 @@ new MenuItem("Enable", "Enable").SetValue(true);
                                 }
                             }
                         }
-                       
+
                         else
                         {
                             //Game.GameTime
-                            
+
                             if (Utils.SleepCheck("bottle"))
                             {
                                 bottle.UseAbility(me);
