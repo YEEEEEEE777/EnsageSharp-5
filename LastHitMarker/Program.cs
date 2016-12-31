@@ -101,19 +101,19 @@ namespace LastHitMarker
 
 
             //List of Allied Tier 1 Towers
-            var allyTowers = ObjectManager.GetEntities<Building>().Where(tower =>
+            var allyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
                 tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
                 && tower.Team == player.Team
                 && tower.MaximumDamage == 120).ToList();
 
             //List of Enemy Towers
-            var enemyTowers = ObjectManager.GetEntities<Building>().Where(tower =>
+            var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
                 tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
                 && tower.Team != player.Team).ToList();
 
 
             //List of Creeps
-            var creeps = ObjectManager.GetEntities<Creep>().Where(creep =>
+            var creeps = ObjectManager.GetEntitiesParallel<Creep>().Where(creep =>
                 (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
                 || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege)
                 && creep.Team != player.Team
@@ -210,11 +210,11 @@ namespace LastHitMarker
 
             var player = ObjectManager.LocalPlayer;
 
-            var creeps = ObjectManager.GetEntities<Unit>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
+            var creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
                 && creep.IsVisible
                 && creep.IsSpawned).ToList();
 
-            var enemyTowers = ObjectManager.GetEntities<Building>().Where(tower =>
+            var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
                 tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
                 && tower.Team != player.Team).ToList();
 
