@@ -67,8 +67,8 @@ namespace LastHitMarker
 
                 else if (quellingBlade || talon)
                 {
-                    minDamageCreep = me.MinimumDamage * 1.4 + me.BonusDamage;
-                    maxDamageCreep = me.MaximumDamage * 1.4 + me.BonusDamage;
+                    minDamageCreep = me.MinimumDamage + 24 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage + 24 + me.BonusDamage;
                 }
 
                 else
@@ -88,8 +88,8 @@ namespace LastHitMarker
 
                 else if (quellingBlade || talon)
                 {
-                    minDamageCreep = me.MinimumDamage * 1.15 + me.BonusDamage;
-                    maxDamageCreep = me.MaximumDamage * 1.15 + me.BonusDamage;
+                    minDamageCreep = me.MinimumDamage + 7 + me.BonusDamage;
+                    maxDamageCreep = me.MaximumDamage + 7 + me.BonusDamage;
                 }
                 else
                 {
