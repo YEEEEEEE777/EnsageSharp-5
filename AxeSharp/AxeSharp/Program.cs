@@ -7,8 +7,6 @@
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Menu;
-    using Ensage.Common.Objects;
-    using SharpDX.Direct3D;
     using SharpDX;
 
 
@@ -100,6 +98,7 @@
 
         private static void Main()
         {
+
             Menu.AddItem(EnableKeyItem);
             Menu.AddItem(KillKeyItem);
             Menu.AddItem(ItemKeyItem);
@@ -127,21 +126,25 @@
 
         private static void Game_OnUpdate(EventArgs args)
         {
+                       
             if (!_killStealEnabled)
             {
+                
                 if (!Game.IsInGame) return;
+                
 
                 player = ObjectManager.LocalPlayer;
                 me = ObjectManager.LocalHero;
 
                 if (player == null || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Axe) return;
-
+ Console.WriteLine(me.ClassID);
                 _killStealEnabled = true;
                 Console.WriteLine("[AxeSharp: Loaded!]");
             }
-
+            
             else if (!Game.IsInGame || player == null || me == null)
             {
+                
                 _killStealEnabled = false;
                 UnitSpellDictionary.Clear();
                 UnitDamageDictionary.Clear();
@@ -159,11 +162,12 @@
 
 
             if (!Menu.Item("Enable").GetValue<bool>()) return;
+            
             calc();
             dunkHero(me.Spellbook.Spell4, Damage, Adamage);
             dunk(me.Spellbook.Spell4, Damage, Adamage);
             jump();
-            taunt();
+            //taunt();
             manaCheck();
         }
 
@@ -240,6 +244,7 @@
 
         private static void execute(Hero target, Vector3 blinkPos)
         {
+            
 
             findItem();
             var call = me.Spellbook.Spell1;
@@ -517,10 +522,10 @@
             var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
             var spellCastPoint = (float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000); // This should always be 0 since _killerror never changes.
 
-            var bears = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.ClassID == ClassID.CDOTA_Unit_SpiritBear);
-            var roshans = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.ClassID == ClassID.CDOTA_Unit_Roshan);
-            var couriers = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.ClassID.Equals(ClassID.CDOTA_Unit_Courier));
-            var familiars = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.ClassID == ClassID.CDOTA_Unit_VisageFamiliar);
+            var bears = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.Name.Contains("druid_bear"));
+            var roshans = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.Name.Contains("roshan"));
+            var couriers = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.Name.Contains("courier"));
+            var familiars = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.Name.Contains("familiar"));
 
             IEnumerable<Unit> enemies = Enumerable.Empty<Unit>();
 
@@ -642,7 +647,7 @@
         {
             if (spell.Cooldown > 0) return;
 
-            if (target.ClassID == ClassID.CDOTA_Unit_VisageFamiliar)
+            if (target.Name.Contains("familiar"))
             {
                 if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.IsInvul())
                 {
@@ -657,7 +662,7 @@
 
             //CanBeCasted(spell)
 
-            else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.ClassID == ClassID.CDOTA_Unit_Roshan && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
+            else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.Name.Contains("roshan") && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
             {
                 spell.UseAbility(target);
                 vhero = target;
@@ -670,9 +675,11 @@
 
         private static void cancelUlt()
         {
+            
             var dmg = Damage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
-
-            if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
+            var agh = me.FindItem("item_ultimate_scepter");
+            
+            if(agh != null)//if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
             {
                 dmg = Adamage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
             }
@@ -717,7 +724,7 @@
             if ((!Menu.Item("Enable").GetValue<bool>())) return;
 
             var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsVisible && hero.IsAlive && !hero.IsIllusion()).ToList();
-            var units = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.ClassID == ClassID.CDOTA_Unit_SpiritBear || unit.ClassID == ClassID.CDOTA_Unit_Roshan || unit.ClassID == ClassID.CDOTA_Unit_VisageFamiliar || unit.ClassID == ClassID.CDOTA_Unit_Courier)).ToList();
+            var units = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.Name.Contains("druid_bear")  || unit.Name.Contains("roshan") || unit.Name.Contains("familiar") || unit.Name.Contains("courier"))).ToList();
 
             var enemiesAndUnits = enemies.Union(units);
 
@@ -746,7 +753,7 @@
 
                 var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 150), FontFlags.None);
                 var textPos = start + new Vector2(51 - textSize.X / 1, -textSize.Y / 1 + 2);
-                Drawing.DrawText(text, "Arial", textPos, new Vector2(20, 0), colorChoice(damageNeeded, totalDamage), FontFlags.DropShadow);
+                Drawing.DrawText(text, "Arial", textPos, new Vector2(20, 0), ColorChoice(damageNeeded, totalDamage), FontFlags.DropShadow);
             }
 
             foreach (var unit in units)
@@ -768,7 +775,7 @@
             }
         }
 
-        private static Color colorChoice(double damageNeeded, double totalDamage)
+        private static Color ColorChoice(double damageNeeded, double totalDamage)
         {
             if (damageNeeded <= 0)
                 return Color.Red;
@@ -783,6 +790,7 @@
         }
 
 
+        /*
         private static void taunt()
         {
             if (!TauntEnableKeyItem.GetValue<bool>()) return;
@@ -800,6 +808,7 @@
             }
 
         }
+        */
 
 
     }
