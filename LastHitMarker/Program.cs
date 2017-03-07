@@ -188,7 +188,7 @@ namespace LastHitMarker
                     else if ((allyTowers.Exists(tower => (creep.Distance2D(tower) < 750))) && ((creep.IsMelee && (creep.Health % 98.2142857 > minDamageCreep * (1 - creep.DamageResist)))
                             || ((creep.IsRanged && creep.AttackRange == 690) && (creep.Health % 165 > minDamageCreep * (1 - creep.DamageResist) * 0.5))
                             || ((creep.IsRanged && creep.AttackRange != 690) && (creep.Health % 110 > minDamageCreep * (1 - creep.DamageResist)))))
-                    {                        
+                    {
                         //if (CreepsDictionary.TryGetValue(creep, out creepType)) continue; //If it is a creep
                         CreepsDictionary.Remove(creep);
                         creepType = "prime";
@@ -207,55 +207,65 @@ namespace LastHitMarker
         {
             if (!Game.IsInGame)
                 return;
+     
+                var player = ObjectManager.LocalPlayer;
 
-            var player = ObjectManager.LocalPlayer;
-
-            var creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
-                && creep.IsVisible
-                && creep.IsSpawned).ToList();
-
-            var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
-                tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
-                && tower.Team != player.Team).ToList();
-
-            foreach (var tower in enemyTowers)
+                List<Unit> creeps ;
+            try
             {
-                var enemyTowerPos = tower.Position + new Vector3(0, 0, tower.HealthBarOffset);
-                var start = HUDInfo.GetHPbarPosition(tower) + new Vector2(HUDInfo.GetHPBarSizeX(tower) / 2 - 5, HUDInfo.GetHpBarSizeY(tower) - 50);
-                var size = new Vector2(25, 25);
-                var greenText = Drawing.GetTexture("materials/vgui/hud/hud_timer_full.vmat");
-                var greyText2 = Drawing.GetTexture("materials/vgui/hud/minimap_creep.vmat");
-                string towerType;
-
-                if (!TowersDictionary.TryGetValue(tower, out towerType)) continue;
-                switch (towerType)
-                {
-                    case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
-                    case "passive": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
-                }
+                creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
+                    && creep.IsVisible
+                    && creep.IsSpawned).ToList();
 
             }
-
-            foreach (var creep in creeps)
+            catch
             {
-                //Vector2 screenPos;
-                var enemyPos = creep.Position + new Vector3(0, 0, creep.HealthBarOffset);
-                var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 5, HUDInfo.GetHpBarSizeY(creep) - 10);
-                var size = new Vector2(15, 15);
-                var greenText = Drawing.GetTexture("materials/vgui/hud/hud_timer_full.vmat");
-                var coinText = Drawing.GetTexture("materials/ensage_ui/other/active_coin.vmat");
-                var greyText2 = Drawing.GetTexture("materials/vgui/hud/minimap_creep.vmat");
-                var coinsText = Drawing.GetTexture("materials/vgui/hud/gold.vmat");
-                string creepType;
-
-                if (!CreepsDictionary.TryGetValue(creep, out creepType)) continue; //If not creep continue.
-
-                switch (creepType)
-                {
-                    case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
-                    case "prime": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
-                }
+                return;
             }
+
+                var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
+                    tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                    && tower.Team != player.Team).ToList();
+
+                foreach (var tower in enemyTowers)
+                {
+                    var enemyTowerPos = tower.Position + new Vector3(0, 0, tower.HealthBarOffset);
+                    var start = HUDInfo.GetHPbarPosition(tower) + new Vector2(HUDInfo.GetHPBarSizeX(tower) / 2 - 5, HUDInfo.GetHpBarSizeY(tower) - 50);
+                    var size = new Vector2(25, 25);
+                    var greenText = Drawing.GetTexture("materials/vgui/hud/hud_timer_full.vmat");
+                    var greyText2 = Drawing.GetTexture("materials/vgui/hud/minimap_creep.vmat");
+                    string towerType;
+
+                    if (!TowersDictionary.TryGetValue(tower, out towerType)) continue;
+                    switch (towerType)
+                    {
+                        case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
+                        case "passive": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
+                    }
+
+                }
+
+                foreach (var creep in creeps)
+                {
+                    //Vector2 screenPos;
+                    var enemyPos = creep.Position + new Vector3(0, 0, creep.HealthBarOffset);
+                    var start = HUDInfo.GetHPbarPosition(creep) + new Vector2(HUDInfo.GetHPBarSizeX(creep) / 2 - 5, HUDInfo.GetHpBarSizeY(creep) - 10);
+                    var size = new Vector2(15, 15);
+                    var greenText = Drawing.GetTexture("materials/vgui/hud/hud_timer_full.vmat");
+                    var coinText = Drawing.GetTexture("materials/ensage_ui/other/active_coin.vmat");
+                    var greyText2 = Drawing.GetTexture("materials/vgui/hud/minimap_creep.vmat");
+                    var coinsText = Drawing.GetTexture("materials/vgui/hud/gold.vmat");
+                    string creepType;
+
+                    if (!CreepsDictionary.TryGetValue(creep, out creepType)) continue; //If not creep continue.
+
+                    switch (creepType)
+                    {
+                        case "active": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greenText); break;
+                        case "prime": Drawing.DrawRect(start, new Vector2(size.Y, size.X), greyText2); break;
+                    }
+                }
+
         }
 
     }
