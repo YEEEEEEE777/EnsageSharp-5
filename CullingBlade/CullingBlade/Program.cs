@@ -36,7 +36,7 @@
         private static readonly Dictionary<Hero, double> HeroDamageDictionary = new Dictionary<Hero, double>();
         private static readonly Dictionary<Hero, double> HeroSpinDictionary = new Dictionary<Hero, double>();
         private static readonly Dictionary<Unit, double> UnitDamageDictionary = new Dictionary<Unit, double>();
-        private static readonly Dictionary<Unit, string> UnitSpellDictionary = new Dictionary<Unit, string>();
+
 
         private static readonly Dictionary<Hero, Vector3> HeroJumpPosDictionary = new Dictionary<Hero, Vector3>();
         private static readonly Dictionary<Hero, int> HeroEnemyNearbyDictionary = new Dictionary<Hero, int>();
@@ -111,12 +111,12 @@
 
 
                 _killStealEnabled = false;
-                UnitSpellDictionary.Clear();
+
                 UnitDamageDictionary.Clear();
                 HeroDamageDictionary.Clear();
                 HeroSpinDictionary.Clear();
                 UnitDamageDictionary.Clear();
-                UnitSpellDictionary.Clear();
+
                 HeroJumpPosDictionary.Clear();
                 HeroEnemyNearbyDictionary.Clear();
                 Console.WriteLine("[CullingBlade: UnLoaded!]");
@@ -128,9 +128,9 @@
 
             if (!Menu.Item("Enable").GetValue<bool>()) return;
 
-            calc();
+            DamageCalculation();
             //dunkHero(me.Spellbook.Spell4, Damage, Adamage);
-            dunk(me.Spellbook.Spell4, Damage, Adamage);
+            Dunk(Damage, Adamage);
 
 
         }
@@ -144,13 +144,13 @@
 
 
 
-        private static void calc()
+        private static void DamageCalculation()
         {
             Ability call = me.Spellbook.Spell1;
             Ability helix = me.Spellbook.Spell3;
 
             if (call == null || helix == null) return;
-            if (!(call.Level > 0) && !(helix.Level > 0)) return;
+            if ((call.Level <= 0) || (helix.Level <= 0)) return;
 
             var holdDur = TauntDur[Convert.ToInt32(call.Level - 1)];
 
@@ -267,7 +267,6 @@
                 else
                 {
                     HeroSpinDictionary.Remove(enemy);
-
                     totalDamage = reflectedDmg + spinDamage + rclickDamage + mjolDmg + shivaDmg + dagonDmg;
                     HeroSpinDictionary.Add(enemy, totalDamage);
                 }
@@ -277,7 +276,7 @@
             }
         }
 
-        private static double magicStick(Unit target)
+        private static double MagicStick(Unit target)
         {
             var enemyStick = target.FindItem("item_magic_stick");
             var enemyWand = target.FindItem("item_magic_wand");
@@ -297,23 +296,11 @@
             }
         }
 
-        private static void dunk(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
+        private static void Dunk(IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
         {
             if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("visage_summon_familiars") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) return;
-            if (ability.Level <= 0) return;
 
-            var spellLevel = (int)ability.Level - 1; // base 0 index system
-
-
-            double normalDamage = me.AghanimState() ? adamage[spellLevel] : damage[spellLevel];
-
-            var spellDamageType = ability.DamageType;
-            var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
-            var spellCastPoint = (ability.GetCastPoint(ability.Level) + (Game.Ping / 1000));//(float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000); // This should always be 0 since _killerror never changes.
-
-            //Console.WriteLine(Game.Ping/1000);
-            //Console.WriteLine(ability.GetCastPoint(ability.Level));
-
+            var cullingBlade = me.Spellbook.Spell4;
 
             IEnumerable<Unit> enemies = Enumerable.Empty<Unit>();
 
@@ -329,13 +316,61 @@
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) enemies = enemies.Union(couriers);
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) enemies = enemies.Union(heroes);
 
-            //Orbwalking.CanCancelAnimation()
+
+
+            if (cullingBlade.Level <= 0)
+            {
+                foreach (var enemy in enemies)
+                {
+
+
+                    double damageNeeded;
+
+
+                    if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded))
+                    {
+
+                        damageNeeded = enemy.Health + MagicStick(enemy);
+                        UnitDamageDictionary.Add(enemy, damageNeeded);
+                    }
+
+                    else
+                    {
+                        UnitDamageDictionary.Remove(enemy);
+                        damageNeeded = enemy.Health + MagicStick(enemy);
+                        UnitDamageDictionary.Add(enemy, damageNeeded);
+                    }
 
 
 
+                }
+
+                return;
+            }
+            
+
+
+
+
+            var spellLevel = (int)cullingBlade.Level - 1; // base 0 index system
+
+            double normalDamage = me.AghanimState() ? adamage[spellLevel] : damage[spellLevel];
+
+            var spellDamageType = cullingBlade.DamageType;
+            var spellRange = (cullingBlade.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
+            var spellCastPoint = (cullingBlade.GetCastPoint(cullingBlade.Level) + (Game.Ping / 1000));//(float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000); // This should always be 0 since _killerror never changes.
+
+            //Console.WriteLine(Game.Ping/1000);
+            //Console.WriteLine(ability.GetCastPoint(ability.Level));
+
+
+
+
+
+            //Add support for priority and facing direction.
             foreach (var enemy in enemies)
             {
-                
+
                 //Console.WriteLine(enemy.UnitType);
                 double spellDamage = normalDamage;
 
@@ -347,87 +382,31 @@
                 if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded))
                 {
 
-                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + magicStick(enemy);
+                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + MagicStick(enemy);
                     UnitDamageDictionary.Add(enemy, damageNeeded);
-                    UnitSpellDictionary.Add(enemy, ability.Name);
-
                 }
+
                 else
                 {
                     UnitDamageDictionary.Remove(enemy);
-                    UnitSpellDictionary.Remove(enemy);
-
-
-
-                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + magicStick(enemy);
+                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + MagicStick(enemy);
                     UnitDamageDictionary.Add(enemy, damageNeeded);
-                    UnitSpellDictionary.Add(enemy, ability.Name);
                 }
 
 
-                if (me.IsChanneling()) return;
+                //if (me.IsChanneling()) return;
 
-                if (!(damageNeeded < 0) || !(me.Distance2D(enemy) < spellRange) || !meCanSurvive(enemy, me, ability, damageDone)) continue;
+                if (!(damageNeeded < 0) || !(me.Distance2D(enemy) < spellRange) || !meCanSurvive(enemy, me, cullingBlade, damageDone)) continue;
 
 
-                castSpell(ability, enemy);
-                break;
+                castSpell(cullingBlade, enemy);
+                //break; //what is this for?? commented it to optimize.
             }
+
         }
 
 
-        /*
-        private static void dunkHero(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
-        {
-            if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) return;
-            var spellLevel = (int)ability.Level - 1;
 
-            if (ability.Level <= 0) return;
-
-            double normalDamage = me.AghanimState() ? adamage[spellLevel] : damage[spellLevel];
-
-            var spellDamageType = ability.DamageType;
-            var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
-            var spellCastPoint = (float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000);
-
-            var enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0).ToList();
-
-
-
-            foreach (var enemy in enemies)
-            {
-                double spellDamage = normalDamage;
-
-                var damageDone = (float)spellDamage;
-
-                double damageNeeded;
-
-                if (!HeroDamageDictionary.TryGetValue(enemy, out damageNeeded))
-                {
-                    damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration + MorphMustDie(enemy, spellCastPoint);
-                    HeroDamageDictionary.Add(enemy, damageNeeded);
-
-                }
-                else
-                {
-                    HeroDamageDictionary.Remove(enemy);
-
-
-                    damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration + MorphMustDie(enemy, spellCastPoint);
-
-                    HeroDamageDictionary.Add(enemy, damageNeeded);
-
-                }
-                if (me.IsChanneling()) return;
-
-                if (!(damageNeeded < 0) || !(me.Distance2D(enemy) < spellRange || !meCanSurvive(enemy, me, ability, damageDone))) continue;
-
-
-                castSpell(ability, enemy);
-                break;
-            }
-        }
-        */
 
 
 
@@ -454,7 +433,7 @@
 
             if (target.Name.Contains("familiar"))
             {
-                if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.IsInvul())
+                if (Utils.SleepCheck("ks") && CanBeCasted(spell) && me.CanCast() && !target.IsInvul())
                 {
                     spell.UseAbility(target);
                     //vhero = target;
@@ -467,13 +446,13 @@
 
             //CanBeCasted(spell)
 
-            else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.Name.Contains("roshan") && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
+            else if (Utils.SleepCheck("ks") && CanBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.Name.Contains("roshan") && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
             {
                 spell.UseAbility(target);
 
                 vhero = target;
 
-                DelayAction.Add((spell.GetCastPoint(spell.Level) * 1000) - Game.Ping, cancelUlt);
+                DelayAction.Add((spell.GetCastPoint(spell.Level) * 1000) - Game.Ping, CancelUlt);
 
                 Utils.Sleep(25, "ks");
             }
@@ -481,7 +460,7 @@
 
         }
 
-        private static void cancelUlt()
+        private static void CancelUlt()
         {
 
             var dmg = Damage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
@@ -502,7 +481,7 @@
         }
 
 
-        private static bool canBeCasted(Ability ability)
+        private static bool CanBeCasted(Ability ability)
         {
             return ability != null && ability.Cooldown.Equals(0) && ability.Level > 0 && me.Mana > ability.ManaCost;
         }
@@ -531,11 +510,11 @@
 
             if ((!Menu.Item("Enable").GetValue<bool>())) return;
 
-            var enemies2 = ObjectManager.GetEntitiesParallel<Hero>().Where(hero => hero.IsVisible && hero.IsAlive && !hero.IsIllusion()).ToList();
-            var units = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.Name.Contains("druid_bear") || unit.Name.Contains("roshan") || unit.Name.Contains("familiar") || unit.Name.Contains("courier"))).ToList();
+            var enemyHeroes = ObjectManager.GetEntitiesParallel<Hero>().Where(hero => hero.IsVisible && hero.IsAlive && !hero.IsIllusion()).ToList();
+            var enemyUnits = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.Name.Contains("druid_bear") || unit.Name.Contains("roshan") || unit.Name.Contains("familiar") || unit.Name.Contains("courier"))).ToList();
             //var enemiesAndUnits = enemies2.Union(units);
 
-            foreach (var enemy in enemies2)
+            foreach (var enemy in enemyHeroes)
             {
                 if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) continue;
                 Vector2 screenPos;
@@ -549,7 +528,10 @@
 
                 if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded) || !HeroSpinDictionary.TryGetValue(enemy, out totalDamage)) continue;
 
-                var percent = (totalDamage / damageNeeded) >= 2 ? 1000 : Math.Abs(Math.Round(100 * (totalDamage / damageNeeded) * 0.75));
+                //if (UnitDamageDictionary.TryGetValue(enemy, out damageNeeded) && HeroSpinDictionary.TryGetValue(enemy, out totalDamage)) continue;
+
+
+                ////var percent = (totalDamage / damageNeeded) >= 2 ? 1000 : Math.Abs(Math.Round(100 * (totalDamage / damageNeeded) * 0.75));
 
                 string text = "KS: " + string.Format("{0}", (int)damageNeeded) + string.Format(" | ({0})", (int)totalDamage);
 
@@ -565,7 +547,7 @@
 
 
 
-            foreach (var unit in units)
+            foreach (var unit in enemyUnits)
             {
                 if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block") && (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear"))) return;
                 Vector2 screenPos;
@@ -575,7 +557,7 @@
                 var start = screenPos + new Vector2(-51, -40);
                 double damageNeeded;
                 string spell;
-                if (!UnitDamageDictionary.TryGetValue(unit, out damageNeeded) || !UnitSpellDictionary.TryGetValue(unit, out spell)) continue;
+                if (!UnitDamageDictionary.TryGetValue(unit, out damageNeeded)) continue;
 
                 var text = "KS:  " + string.Format("{0}", (int)damageNeeded);
                 var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 150), FontFlags.None);
@@ -585,6 +567,7 @@
 
 
         }
+
 
         private static Color ColorChoice(double damageNeeded, double totalDamage)
         {
@@ -611,3 +594,55 @@
 
 
 
+/*
+       private static void dunkHero(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
+       {
+           if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) return;
+           var spellLevel = (int)ability.Level - 1;
+
+           if (ability.Level <= 0) return;
+
+           double normalDamage = me.AghanimState() ? adamage[spellLevel] : damage[spellLevel];
+
+           var spellDamageType = ability.DamageType;
+           var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
+           var spellCastPoint = (float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000);
+
+           var enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0).ToList();
+
+
+
+           foreach (var enemy in enemies)
+           {
+               double spellDamage = normalDamage;
+
+               var damageDone = (float)spellDamage;
+
+               double damageNeeded;
+
+               if (!HeroDamageDictionary.TryGetValue(enemy, out damageNeeded))
+               {
+                   damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration + MorphMustDie(enemy, spellCastPoint);
+                   HeroDamageDictionary.Add(enemy, damageNeeded);
+
+               }
+               else
+               {
+                   HeroDamageDictionary.Remove(enemy);
+
+
+                   damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration + MorphMustDie(enemy, spellCastPoint);
+
+                   HeroDamageDictionary.Add(enemy, damageNeeded);
+
+               }
+               if (me.IsChanneling()) return;
+
+               if (!(damageNeeded < 0) || !(me.Distance2D(enemy) < spellRange || !meCanSurvive(enemy, me, ability, damageDone))) continue;
+
+
+               castSpell(ability, enemy);
+               break;
+           }
+       }
+       */
