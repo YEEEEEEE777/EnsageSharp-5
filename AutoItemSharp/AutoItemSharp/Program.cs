@@ -81,8 +81,6 @@ namespace AutoItemSharp
             me = ObjectManager.LocalHero;
 
             if ((!Menu.Item("Enable").GetValue<bool>()) || !Game.IsInGame || player == null || me == null || Game.IsChatOpen || Game.IsWatchingGame || Game.IsPaused || me.IsChanneling()) return;
-
-            if (!me.IsInvisible() || me.Name.Equals("npc_dota_hero_riki"))
             {
                 AutoMidas(me);
                 AutoTalon(me);
@@ -344,7 +342,7 @@ namespace AutoItemSharp
             Item phase = unit.FindItem("item_phase_boots");
 
 
-            if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && unit.IsMoving && !unit.IsChanneling() && !unit.IsInvisible() && unit.IsAlive)
+            if (phase != null && phase.Cooldown <= 0 && Utils.SleepCheck("Phase") && unit.IsMoving && !unit.IsChanneling() && (!unit.IsInvisible() || unit.Name.Equals("npc_dota_hero_riki")) && unit.IsAlive)
             {
                 phase.UseAbility();
                 Utils.Sleep(250, "Phase");
