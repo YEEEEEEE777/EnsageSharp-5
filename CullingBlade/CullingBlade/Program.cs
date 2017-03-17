@@ -153,8 +153,6 @@
             if (!(call.Level > 0) && !(helix.Level > 0)) return;
 
             var holdDur = TauntDur[Convert.ToInt32(call.Level - 1)];
-            //var regen = me.HealthRegeneration; // ADD THIS IN SOMEDAY.
-
 
             //Damage depending on Heroes.
             var enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0);
@@ -235,9 +233,9 @@
                 //Damage done by Axe blademail during Call.        
                 if (blademail != null && blademail.Cooldown <= 0)
                 {
-                    var heroMainAtkDamage = enemy.DamageAverage + enemy.BonusDamage;
+                    var heroTotalPhysicalDamage = enemy.DamageAverage + enemy.BonusDamage;
                     var heroResist = enemy.DamageResist;
-                    var heroFinalAtkDmg = heroMainAtkDamage * (1 - heroResist);
+                    var heroFinalAtkDmg = heroTotalPhysicalDamage * (1 - heroResist);
 
                     var heroAtkPS = enemy.AttacksPerSecond;
                     var heroNumAtks = Math.Round(holdDur * heroAtkPS);
@@ -279,6 +277,26 @@
             }
         }
 
+        private static double magicStick(Unit target)
+        {
+            var enemyStick = target.FindItem("item_magic_stick");
+            var enemyWand = target.FindItem("item_magic_wand");
+
+            if (enemyStick == null && enemyWand == null) return Convert.ToDouble(0);
+
+            else
+            {
+                var mainHealingStick = enemyStick == null ? enemyWand : enemyStick;
+
+                if (mainHealingStick.Cooldown > 0) return Convert.ToDouble(0);
+
+                long enemyStickWandHealPerCharge = 15;
+                long totalStickWandHeal = mainHealingStick.CurrentCharges * enemyStickWandHealPerCharge;
+                //Console.WriteLine("Heal: " + totalStickWandHeal);
+                return Convert.ToDouble(totalStickWandHeal);
+            }
+        }
+
         private static void dunk(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
         {
             if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("visage_summon_familiars") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) return;
@@ -295,7 +313,7 @@
 
             //Console.WriteLine(Game.Ping/1000);
             //Console.WriteLine(ability.GetCastPoint(ability.Level));
-            
+
 
             IEnumerable<Unit> enemies = Enumerable.Empty<Unit>();
 
@@ -317,6 +335,7 @@
 
             foreach (var enemy in enemies)
             {
+                
                 //Console.WriteLine(enemy.UnitType);
                 double spellDamage = normalDamage;
 
@@ -328,7 +347,7 @@
                 if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded))
                 {
 
-                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration);
+                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + magicStick(enemy);
                     UnitDamageDictionary.Add(enemy, damageNeeded);
                     UnitSpellDictionary.Add(enemy, ability.Name);
 
@@ -340,7 +359,7 @@
 
 
 
-                    damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration;
+                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration) + magicStick(enemy);
                     UnitDamageDictionary.Add(enemy, damageNeeded);
                     UnitSpellDictionary.Add(enemy, ability.Name);
                 }
@@ -451,7 +470,7 @@
             else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.Name.Contains("roshan") && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
             {
                 spell.UseAbility(target);
-                
+
                 vhero = target;
 
                 DelayAction.Add((spell.GetCastPoint(spell.Level) * 1000) - Game.Ping, cancelUlt);
