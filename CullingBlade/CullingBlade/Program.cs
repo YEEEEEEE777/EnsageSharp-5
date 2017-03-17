@@ -84,7 +84,7 @@
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Game_OnDraw;
-            Player.OnExecuteOrder += Player_OnExecuteOrder;
+
         }
 
 
@@ -129,19 +129,10 @@
             if (!Menu.Item("Enable").GetValue<bool>()) return;
 
             DamageCalculation();
-            //dunkHero(me.Spellbook.Spell4, Damage, Adamage);
             Dunk(Damage, Adamage);
 
 
         }
-
-
-        private static void Player_OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
-        {
-            if (_comboInUse) args.Process = false;
-        }
-
-
 
 
         private static void DamageCalculation()
@@ -236,6 +227,7 @@
                     var heroTotalPhysicalDamage = enemy.DamageAverage + enemy.BonusDamage;
                     var heroResist = enemy.DamageResist;
                     var heroFinalAtkDmg = heroTotalPhysicalDamage * (1 - heroResist);
+                    
 
                     var heroAtkPS = enemy.AttacksPerSecond;
                     var heroNumAtks = Math.Round(holdDur * heroAtkPS);
