@@ -1,4 +1,4 @@
-﻿namespace AxeSharp
+﻿namespace CullingBlade
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +7,6 @@
     using Ensage.Common;
     using Ensage.Common.Extensions;
     using Ensage.Common.Menu;
-    using Ensage.Common.Objects;
-    using SharpDX.Direct3D;
     using SharpDX;
 
 
@@ -16,8 +14,7 @@
     {
         private static readonly MenuItem EnableKeyItem =
             new MenuItem("Enable", "Enable").SetValue(true);
-        private static readonly MenuItem TauntEnableKeyItem =
-    new MenuItem("Enable Taunt", "Enable Taunt").SetValue(true);
+
         private static readonly Dictionary<string, bool> unitsdict = new Dictionary<string, bool>
             {
                 { "roshan_spell_block", true },
@@ -26,37 +23,14 @@
                 { "item_flying_courier", true },
                 {"axe_culling_blade", true }
         };
+
         private static readonly MenuItem KillKeyItem =
             new MenuItem("xKill", "Kill:").SetValue(new AbilityToggler(unitsdict));
+
         private static readonly MenuItem PotentialDmgItem =
             new MenuItem("Show Potential Damage", "Show Potential Damage").SetValue(true).SetTooltip("Show potential damage output of helix and items if enemy is called.");
-        private static readonly Dictionary<string, bool> itemsDict = new Dictionary<string, bool>
-            {
-                { "item_dagon_5", true },
-                { "item_shivas_guard", true },
-                { "item_black_king_bar", true },
-                { "item_blade_mail", true },
-                {"item_crimson_guard", true },
-                {"item_pipe", true },
-                {"item_lotus_orb", true },
-                {"item_mjollnir", true },
-            { "item_refresher", true },
-        };
-        private static readonly MenuItem ItemKeyItem =
-    new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
+
         private static readonly MenuItem UltRangeItem = new MenuItem("Dunk Range", "Dunk Range").SetValue(new Slider(75, 500, 0));
-        private static readonly MenuItem NumJumpItem = new MenuItem("# of Enemies to Jump", "# of Enemies to Jump").SetValue(new Slider(1, 5, 1));
-        private static readonly MenuItem EnableJumpKeyItem =
-            new MenuItem("Enable Jump", "Enable Jump").SetValue(true);
-
-
-        private static readonly MenuItem TauntKeyItem =
-            new MenuItem("Taunt", "Taunt").SetValue(new KeyBind('F', KeyBindType.Press)).SetTooltip("Press to become fire truck.");
-
-        private static readonly MenuItem JumpItem =
-            new MenuItem("Jump", "Jump").SetValue(new KeyBind('D', KeyBindType.Press)).SetTooltip("Hold to blink combo into enemies.");
-
-
 
 
         private static readonly Dictionary<Hero, double> HeroDamageDictionary = new Dictionary<Hero, double>();
@@ -70,9 +44,8 @@
 
 
 
-        private static readonly Menu Menu = new Menu("[ 6 0 0 0 ] AxeSharp", "[ 6 0 0 0 ] AxeSharp", true, "npc_dota_hero_axe", true);
-        private static readonly Menu JumpMenu = new Menu("Jump", "Jump");
-        private static readonly Menu MiscMenu = new Menu("Misc.", "Misc.");
+        private static readonly Menu Menu = new Menu("CullingBlade", "CullingBlade", true, "npc_dota_hero_axe", true);
+
 
 
 
@@ -80,6 +53,7 @@
         private static readonly List<double> Adamage = new List<double>(new double[] { 300, 425, 550 });
         private static readonly List<double> TauntDur = new List<double>(new double[] { 2, 2.4, 2.8, 3.2 });
         private static readonly int[] DagonDmg = new int[5] { 400, 500, 600, 700, 800 };
+
         private static double creepMaxHP = 550;
 
 
@@ -91,33 +65,22 @@
         private static Player player;
         private static Hero me;
 
-        private static Item dagon, mjol, lotus, blademail, shiva, blink, pipe, crimson, hood, bkb, aether, refresh;
-        //private static Ability call = _me.Spellbook.Spell1, hunger = _me.Spellbook.Spell2, helix = _me.Spellbook.Spell3, dunk = _me.Spellbook.Spell4;
-
         private static Unit vhero;// = new Unit();
+
+
+
 
 
 
         private static void Main()
         {
+
+
             Menu.AddItem(EnableKeyItem);
+            Menu.AddItem(PotentialDmgItem);
             Menu.AddItem(KillKeyItem);
-            Menu.AddItem(ItemKeyItem);
-
+            Menu.AddItem(UltRangeItem);
             Menu.AddToMainMenu();
-
-            
-
-            Menu.AddSubMenu(JumpMenu);
-            JumpMenu.AddItem(EnableJumpKeyItem);
-            JumpMenu.AddItem(JumpItem);
-            JumpMenu.AddItem(NumJumpItem);
-
-            Menu.AddSubMenu(MiscMenu);
-            MiscMenu.AddItem(TauntEnableKeyItem);
-            MiscMenu.AddItem(TauntKeyItem);
-            MiscMenu.AddItem(UltRangeItem);
-            MiscMenu.AddItem(PotentialDmgItem);
 
             Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Game_OnDraw;
@@ -127,21 +90,26 @@
 
         private static void Game_OnUpdate(EventArgs args)
         {
+
+
             if (!_killStealEnabled)
             {
-                if (!Game.IsInGame) return;
 
+
+
+                if (!Game.IsInGame) return;
                 player = ObjectManager.LocalPlayer;
                 me = ObjectManager.LocalHero;
-
                 if (player == null || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Axe) return;
-                Console.WriteLine(me.ClassID);
                 _killStealEnabled = true;
-                Console.WriteLine("[AxeSharp: Loaded!]");
+                Console.WriteLine("[CullingBlade: Loaded!]");
             }
+
 
             else if (!Game.IsInGame || player == null || me == null)
             {
+
+
                 _killStealEnabled = false;
                 UnitSpellDictionary.Clear();
                 UnitDamageDictionary.Clear();
@@ -151,7 +119,7 @@
                 UnitSpellDictionary.Clear();
                 HeroJumpPosDictionary.Clear();
                 HeroEnemyNearbyDictionary.Clear();
-                Console.WriteLine("[AxeSharp: UnLoaded!]");
+                Console.WriteLine("[CullingBlade: UnLoaded!]");
                 return;
             }
 
@@ -159,12 +127,12 @@
 
 
             if (!Menu.Item("Enable").GetValue<bool>()) return;
+
             calc();
-            dunkHero(me.Spellbook.Spell4, Damage, Adamage);
+            //dunkHero(me.Spellbook.Spell4, Damage, Adamage);
             dunk(me.Spellbook.Spell4, Damage, Adamage);
-            jump();
-            taunt();
-            manaCheck();
+
+
         }
 
 
@@ -172,198 +140,6 @@
         {
             if (_comboInUse) args.Process = false;
         }
-
-        private static void findItem()
-        {
-            dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
-            mjol = me.FindItem("item_mjollnir");
-            lotus = me.FindItem("item_lotus_orb");
-            blademail = me.FindItem("item_blade_mail");
-            shiva = me.FindItem("item_shivas_guard");
-            blink = me.FindItem("item_blink");
-            pipe = me.FindItem("item_pipe");
-            crimson = me.FindItem("item_crimson_guard");
-            hood = me.FindItem("item_hood_of_defiance");
-            bkb = me.FindItem("item_black_king_bar");
-            refresh = me.FindItem("item_refresher");
-        }
-
-
-        private static uint manaCheck()
-        {
-            var call = me.Spellbook.Spell1;
-            var dunk = me.Spellbook.Spell4;
-
-            uint manaCost = 0;
-            findItem();
-            if (me.IsAlive)
-            {
-                //Spells
-                if (call.Cooldown <= 0 && call.Level > 0)
-                    manaCost += call.ManaCost;
-                if (dunk.Cooldown <= 0 && dunk.Level > 0)
-                    manaCost += dunk.ManaCost;
-
-                //Dagon
-                if (dagon != null && dagon.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled("item_dagon_5"))
-                    manaCost += dagon.ManaCost;
-
-                //Items
-                if (blademail != null && blademail.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(blademail.Name))
-                    manaCost += blademail.ManaCost;
-                if (mjol != null && mjol.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(mjol.Name))
-                    manaCost += mjol.ManaCost;
-                if (lotus != null && lotus.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(lotus.Name))
-                    manaCost += lotus.ManaCost;
-                if (crimson != null && crimson.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(crimson.Name))
-                    manaCost += crimson.ManaCost;
-                if (pipe != null && pipe.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(pipe.Name))
-                    manaCost += pipe.ManaCost;
-                if (hood != null && hood.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(pipe.Name))
-                    manaCost += hood.ManaCost;
-                if (shiva != null && shiva.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(shiva.Name))
-                    manaCost += shiva.ManaCost;
-                if (bkb != null && bkb.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(bkb.Name))
-                    manaCost += bkb.ManaCost;
-                if (refresh != null && refresh.Cooldown <= 0 && ItemKeyItem.GetValue<AbilityToggler>().IsEnabled(refresh.Name))
-                    manaCost += refresh.ManaCost;
-
-
-
-
-                return manaCost;
-            }
-
-            return manaCost;
-        }
-
-
-        private static void execute(Hero target, Vector3 blinkPos)
-        {
-
-            findItem();
-            var call = me.Spellbook.Spell1;
-            var dunk = me.Spellbook.Spell4;
-            var mana = me.Mana;
-
-
-            if (Game.IsKeyDown(JumpItem.GetValue<KeyBind>().Key) && !Game.IsChatOpen && Utils.SleepCheck("WomboCombo"))
-            {
-                //Console.WriteLine("X: " + blinkPos.X + " Y: " + blinkPos.Y + " Z: " + blinkPos.Z);
-
-                if (blademail != null && blademail.Cooldown <= 0 && me.Mana - blademail.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    blademail.UseAbility();
-                if (mjol != null && mjol.Cooldown <= 0 && me.Mana - mjol.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    mjol.UseAbility(me);
-                if (shiva != null && shiva.Cooldown <= 0 && me.Mana - shiva.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    shiva.UseAbility();
-                if (pipe != null && pipe.Cooldown <= 0 && me.Mana - pipe.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    pipe.UseAbility();
-                if (hood != null && hood.Cooldown <= 0 && me.Mana - hood.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    hood.UseAbility();
-                if (lotus != null && lotus.Cooldown <= 0 && me.Mana - lotus.ManaCost >= call.ManaCost + dunk.ManaCost) //Add buttons
-                    lotus.UseAbility(me);
-                if (crimson != null && crimson.Cooldown <= 0) //Add buttons
-                    crimson.UseAbility();
-                if (bkb != null && bkb.Cooldown <= 0) //Add buttons
-                    bkb.UseAbility();
-
-                /*
-                if (Utils.SleepCheck("console"))
-                {
-                    Console.WriteLine("==================================================================");
-                    Console.WriteLine("Mjol: " + mjol.ManaCost ?? "Fuck");
-                    Console.WriteLine("Shiva: " + (shiva.ManaCost ?? "Fuck"));
-                    Console.WriteLine("Pipe: " + (pipe.ManaCost ?? "Fuck"));
-                    Console.WriteLine("Hood: " + (hood.ManaCost ?? "Fuck"));
-                    Console.WriteLine("Lotus: " + (lotus.ManaCost ?? "Fuck"));
-                    Console.WriteLine("==================================================================");
-                    Utils.Sleep(1200, "console");
-                }
-                */
-
-                _comboInUse = true;
-                me.Move(blinkPos);
-                if (!(me.Distance2D(target) <= 300)) blink.UseAbility(blinkPos);
-                if (dagon != null && dagon.Cooldown <= 0 && me.Mana - dagon.ManaCost >= call.ManaCost + dunk.ManaCost)
-                    dagon.UseAbility(target);
-                call.UseAbility();                
-                DelayAction.Add(400 - Game.Ping, SetFalse);
-                DelayAction.Add(3100 - Game.Ping, useRefresh);
-
- 
-                Utils.Sleep(2500, "WomboCombo");
-                
-            }
-        }
-
-        private static void useRefresh()
-        {
-            if (refresh != null && refresh.Cooldown <= 0 && me.Mana >= manaCheck() && Utils.SleepCheck("Refresh"))
-            {
-                refresh.UseAbility();
-                Utils.Sleep(3000, "Refresh");
-            }
-        }
-
-        private static void SetFalse()
-        {
-            _comboInUse = false;
-        }
-
-
-        private static void jump()
-        {
-            var blink = me.FindItem("item_blink");
-            aether = me.FindItem("item_aether_lens");
-            var range = (aether != null) ? 1400 : 1200;
-            var call = me.Spellbook.Spell1;
-
-            if (me != null && Menu.Item("Enable Jump").GetValue<bool>())
-            {
-
-                List<Hero> enemyHeroesWithinRange = ObjectManager.GetEntities<Hero>().Where(x => x.IsAlive && x.Team != me.Team && x.Health > 0 && x.IsVisible && x.Distance2D(me) <= range && x.IsSpawned).ToList();
-
-                foreach (Hero hero in enemyHeroesWithinRange)
-                {
-                    List<Hero> alliesWithin300 = enemyHeroesWithinRange.Where(x => x.Distance2D(hero) <= 300).ToList();
-                    int nearbyEnemies = alliesWithin300.Count();
-
-                    var avgX = alliesWithin300.Sum(x => x.Position.X) / alliesWithin300.Count();
-                    var avgY = alliesWithin300.Sum(x => x.Position.Y) / alliesWithin300.Count();
-                    var avgZ = alliesWithin300.Sum(x => x.Position.Z) / alliesWithin300.Count();
-
-                    Vector3 midPoint = new Vector3(avgX, avgY, avgZ);
-
-                    //HeroEnemyNearbyDictionary.Add(hero, nearbyEnemies);
-                    HeroJumpPosDictionary.Add(hero, midPoint);
-
-                    if (nearbyEnemies >= Menu.Item("# of Enemies to Jump").GetValue<Slider>().Value)
-                    {
-                        Vector3 blinkPos;
-                        HeroJumpPosDictionary.TryGetValue(hero, out blinkPos);
-                        //double hpPercent = Convert.ToDouble(me.Health) / Convert.ToDouble(me.MaximumHealth);
-                        if ((blink.Cooldown <= 0 || me.Distance2D(hero) <= 300) && call.Cooldown <= 0 && Utils.SleepCheck("Jump") && me.Mana >= call.ManaCost && me.IsAlive && me != null)
-                        {                            
-                            execute(hero, blinkPos);
-
-                            Utils.Sleep(300, "Jump");
-                            HeroJumpPosDictionary.Clear();
-                            HeroEnemyNearbyDictionary.Clear();
-                            break;
-                        }
-                        HeroJumpPosDictionary.Clear();
-                        HeroEnemyNearbyDictionary.Clear();
-                    }
-                    HeroJumpPosDictionary.Clear();
-                    HeroEnemyNearbyDictionary.Clear();
-                }
-                
-            }
-        }
-
-
-
 
 
 
@@ -373,6 +149,7 @@
             Ability call = me.Spellbook.Spell1;
             Ability helix = me.Spellbook.Spell3;
 
+            if (call == null || helix == null) return;
             if (!(call.Level > 0) && !(helix.Level > 0)) return;
 
             var holdDur = TauntDur[Convert.ToInt32(call.Level - 1)];
@@ -380,7 +157,7 @@
 
 
             //Damage depending on Heroes.
-            var enemies = ObjectManager.GetEntities<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0);
+            var enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0);
             foreach (Hero enemy in enemies)
             {
 
@@ -411,7 +188,7 @@
                 var helixCD = helix.GetCooldown((helix.Level - 1));
                 var MaxNumSpins = Math.Floor((holdDur / helixCD));
 
-                var creeps = ObjectManager.GetEntities<Unit>().Where(creep => creep.Team == me.GetEnemyTeam() && creep.IsAlive && creep.Health > 0 && creep.Distance2D(enemy) <= 500); //Add support for neutrals.
+                var creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => creep.Team == me.GetEnemyTeam() && creep.IsAlive && creep.Health > 0 && creep.Distance2D(enemy) <= 500); //Add support for neutrals.
                 var aCreep = creeps.FirstOrDefault(creep => creep.UnitType == 1152 && creep.IsMelee);
 
                 var spinsBeforeDeath = Math.Ceiling(creepMaxHP / helixSpinDmg);
@@ -433,8 +210,6 @@
                 var totalSpins = Math.Min(trueCreepSpins + heroSpins, MaxNumSpins);
                 spinDamage = totalSpins * helixSpinDmg;
 
-
-
                 //Damage done by Shiva
                 if (shiva != null && me.Mana >= 100 && shiva.Cooldown <= 0)
                 {
@@ -448,7 +223,7 @@
                 }
 
                 //Damage done by Mjolnir.                
-                if (mjol != null && me.Mana >= 50 && mjol.Cooldown <= 0)
+                if ((mjol != null && me.Mana >= 50 && mjol.Cooldown <= 0) || me.Modifiers.Any(modifier => modifier.Name == "modifier_item_mjollnir_static" && modifier.RemainingTime >= holdDur))
                 {
                     var mjolPassiveDmg = 150 * (1 - enemy.MagicDamageResist) * (1 + damageAmp);
                     var mjolActiveDmg = 200 * (1 - enemy.MagicDamageResist) * (1 + damageAmp);
@@ -506,41 +281,54 @@
 
         private static void dunk(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
         {
-            if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("visage_summon_familiars") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) return;
+            if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("visage_summon_familiars") && !Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) return;
+            if (ability.Level <= 0) return;
 
             var spellLevel = (int)ability.Level - 1; // base 0 index system
-            if (ability.Level <= 0) return;
+
 
             double normalDamage = me.AghanimState() ? adamage[spellLevel] : damage[spellLevel];
 
             var spellDamageType = ability.DamageType;
             var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
-            var spellCastPoint = (float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000); // This should always be 0 since _killerror never changes.
+            var spellCastPoint = (ability.GetCastPoint(ability.Level) + (Game.Ping / 1000));//(float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000); // This should always be 0 since _killerror never changes.
 
-            var bears = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.ClassID == ClassID.CDOTA_Unit_SpiritBear);
-            var roshans = ObjectManager.GetEntities<Unit>().Where(enemy => enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.ClassID == ClassID.CDOTA_Unit_Roshan);
-            var couriers = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.ClassID.Equals(ClassID.CDOTA_Unit_Courier));
-            var familiars = ObjectManager.GetEntities<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.ClassID == ClassID.CDOTA_Unit_VisageFamiliar);
+            //Console.WriteLine(Game.Ping/1000);
+            //Console.WriteLine(ability.GetCastPoint(ability.Level));
+            
 
             IEnumerable<Unit> enemies = Enumerable.Empty<Unit>();
+
+            var bears = ObjectManager.GetEntitiesParallel<Unit>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.Name.Contains("druid_bear"));
+            var roshans = ObjectManager.GetEntitiesParallel<Unit>().Where(enemy => enemy.IsVisible && enemy.IsAlive && enemy.Health > 0 && enemy.Name.Contains("roshan"));
+            var couriers = ObjectManager.GetEntitiesParallel<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.Name.Contains("courier"));
+            var familiars = ObjectManager.GetEntitiesParallel<Unit>().Where(x => x.IsAlive && x.Team != me.Team && x.Name.Contains("familiar"));
+            var heroes = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0);
 
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("lone_druid_spirit_bear")) enemies = enemies.Union(bears);
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("roshan_spell_block")) enemies = enemies.Union(roshans);
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("visage_summon_familiars")) enemies = enemies.Union(familiars);
             if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("item_flying_courier")) enemies = enemies.Union(couriers);
+            if (Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) enemies = enemies.Union(heroes);
+
+            //Orbwalking.CanCancelAnimation()
+
+
 
             foreach (var enemy in enemies)
             {
+                //Console.WriteLine(enemy.UnitType);
                 double spellDamage = normalDamage;
 
                 var damageDone = (float)spellDamage;
 
                 double damageNeeded;
-
+                //Console.WriteLine(enemy.HealthRegeneration);
 
                 if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded))
                 {
-                    damageNeeded = enemy.Health - damageDone + spellCastPoint * enemy.HealthRegeneration;
+
+                    damageNeeded = enemy.Health - damageDone + (spellCastPoint * enemy.HealthRegeneration);
                     UnitDamageDictionary.Add(enemy, damageNeeded);
                     UnitSpellDictionary.Add(enemy, ability.Name);
 
@@ -569,6 +357,7 @@
         }
 
 
+        /*
         private static void dunkHero(Ability ability, IReadOnlyList<double> damage, IReadOnlyList<double> adamage = null)
         {
             if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) return;
@@ -582,8 +371,9 @@
             var spellRange = (ability.CastRange + Menu.Item("Dunk Range").GetValue<Slider>().Value);
             var spellCastPoint = (float)(((_killError ? 0 : ability.GetCastPoint(ability.Level)) + Game.Ping) / 1000);
 
+            var enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0).ToList();
 
-            var enemies = ObjectManager.GetEntities<Hero>().Where(enemy => enemy.Team == me.GetEnemyTeam() && !enemy.IsIllusion() && enemy.IsVisible && enemy.IsAlive && enemy.Health > 0);
+
 
             foreach (var enemy in enemies)
             {
@@ -618,6 +408,7 @@
                 break;
             }
         }
+        */
 
 
 
@@ -642,7 +433,7 @@
         {
             if (spell.Cooldown > 0) return;
 
-            if (target.ClassID == ClassID.CDOTA_Unit_VisageFamiliar)
+            if (target.Name.Contains("familiar"))
             {
                 if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.IsInvul())
                 {
@@ -657,12 +448,15 @@
 
             //CanBeCasted(spell)
 
-            else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.ClassID == ClassID.CDOTA_Unit_Roshan && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
+            else if (Utils.SleepCheck("ks") && canBeCasted(spell) && me.CanCast() && !target.HasModifier("modifier_skeleton_king_reincarnation_scepter_active") && !(target.Name.Contains("roshan") && target.Spellbook.Spell1.Cooldown < 1) && !target.IsInvul())
             {
                 spell.UseAbility(target);
+                
                 vhero = target;
-                DelayAction.Add(300 - Game.Ping, cancelUlt);
-                Utils.Sleep(50, "ks");
+
+                DelayAction.Add((spell.GetCastPoint(spell.Level) * 1000) - Game.Ping, cancelUlt);
+
+                Utils.Sleep(25, "ks");
             }
 
 
@@ -670,9 +464,11 @@
 
         private static void cancelUlt()
         {
-            var dmg = Damage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
 
-            if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
+            var dmg = Damage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
+            var agh = me.FindItem("item_ultimate_scepter");
+
+            if (agh != null)//if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
             {
                 dmg = Adamage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
             }
@@ -716,12 +512,11 @@
 
             if ((!Menu.Item("Enable").GetValue<bool>())) return;
 
-            var enemies = ObjectManager.GetEntities<Hero>().Where(hero => hero.IsVisible && hero.IsAlive && !hero.IsIllusion()).ToList();
-            var units = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.ClassID == ClassID.CDOTA_Unit_SpiritBear || unit.ClassID == ClassID.CDOTA_Unit_Roshan || unit.ClassID == ClassID.CDOTA_Unit_VisageFamiliar || unit.ClassID == ClassID.CDOTA_Unit_Courier)).ToList();
+            var enemies2 = ObjectManager.GetEntitiesParallel<Hero>().Where(hero => hero.IsVisible && hero.IsAlive && !hero.IsIllusion()).ToList();
+            var units = ObjectManager.GetEntities<Unit>().Where(unit => unit.IsVisible && unit.IsAlive && !unit.IsIllusion() && (unit.Name.Contains("druid_bear") || unit.Name.Contains("roshan") || unit.Name.Contains("familiar") || unit.Name.Contains("courier"))).ToList();
+            //var enemiesAndUnits = enemies2.Union(units);
 
-            var enemiesAndUnits = enemies.Union(units);
-
-            foreach (var enemy in enemies)
+            foreach (var enemy in enemies2)
             {
                 if (!Menu.Item("xKill").GetValue<AbilityToggler>().IsEnabled("axe_culling_blade")) continue;
                 Vector2 screenPos;
@@ -733,7 +528,7 @@
                 double totalDamage;
 
 
-                if (!HeroDamageDictionary.TryGetValue(enemy, out damageNeeded) || !HeroSpinDictionary.TryGetValue(enemy, out totalDamage)) continue;
+                if (!UnitDamageDictionary.TryGetValue(enemy, out damageNeeded) || !HeroSpinDictionary.TryGetValue(enemy, out totalDamage)) continue;
 
                 var percent = (totalDamage / damageNeeded) >= 2 ? 1000 : Math.Abs(Math.Round(100 * (totalDamage / damageNeeded) * 0.75));
 
@@ -746,8 +541,10 @@
 
                 var textSize = Drawing.MeasureText(text, "Arial", new Vector2(10, 150), FontFlags.None);
                 var textPos = start + new Vector2(51 - textSize.X / 1, -textSize.Y / 1 + 2);
-                Drawing.DrawText(text, "Arial", textPos, new Vector2(20, 0), colorChoice(damageNeeded, totalDamage), FontFlags.DropShadow);
+                Drawing.DrawText(text, "Arial", textPos, new Vector2(20, 0), ColorChoice(damageNeeded, totalDamage), FontFlags.DropShadow);
             }
+
+
 
             foreach (var unit in units)
             {
@@ -766,9 +563,11 @@
                 var textPos = start + new Vector2(51 - textSize.X / 1, -textSize.Y / 1 + 2);
                 Drawing.DrawText(text, "Arial", textPos, new Vector2(20, 0), damageNeeded < 0 ? Color.Red : Color.White, FontFlags.DropShadow);
             }
+
+
         }
 
-        private static Color colorChoice(double damageNeeded, double totalDamage)
+        private static Color ColorChoice(double damageNeeded, double totalDamage)
         {
             if (damageNeeded <= 0)
                 return Color.Red;
@@ -783,23 +582,7 @@
         }
 
 
-        private static void taunt()
-        {
-            if (!TauntEnableKeyItem.GetValue<bool>()) return;
-            Ability hunger = me.Spellbook.Spell2;
-            IEnumerable<Unit> closeEnemies1 = ObjectManager.GetEntities<Unit>().Where(x => x.Team != me.Team && x.Distance2D(me) <= hunger.CastRange && x.IsAlive && x.Health > 0 && x.IsVisible && !x.IsMagicImmune() && x.IsSpawned);
-            IEnumerable<Hero> closeEnemies2 = ObjectManager.GetEntities<Hero>().Where(x => x.Team != me.Team && x.Distance2D(me) <= hunger.CastRange && x.IsAlive && x.Health > 0 && x.IsVisible && !x.IsMagicImmune() && x.IsSpawned);
 
-            var oneEnemy = closeEnemies1.Union(closeEnemies2).FirstOrDefault();
-
-            if (me != null && Game.IsKeyDown(TauntKeyItem.GetValue<KeyBind>().Key) && Utils.SleepCheck("Taunt") && hunger.Level >= 1 && oneEnemy != null)
-            {
-                hunger.UseAbility(oneEnemy);
-                DelayAction.Add(Convert.ToInt32(hunger.FindCastPoint() / 2), me.Stop);
-                Utils.Sleep(100, "Taunt");
-            }
-
-        }
 
 
     }
