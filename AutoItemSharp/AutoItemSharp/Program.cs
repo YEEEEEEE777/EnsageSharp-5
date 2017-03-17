@@ -18,19 +18,20 @@ namespace AutoItemSharp
 
         private static readonly Dictionary<string, bool> itemsDict = new Dictionary<string, bool>
             { {"item_ward_dispenser", true },
-{ "item_bottle", true },
+                { "item_bottle", true },
                 { "item_iron_talon", true },
                 { "item_hand_of_midas", true },
                 { "item_phase_boots", true },
                                 { "item_ring_of_basilius", true }
 
         };
-        private static readonly MenuItem ItemKeyItem =
-new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
-        private static readonly MenuItem EnableKeyItem =
-new MenuItem("Enable", "Enable").SetValue(true);
 
-        private static readonly MenuItem PhaseDistanceItem = new MenuItem("Phase Distance", "Phase Distance").SetValue(new Slider(750, 500, 1000));
+        private static readonly MenuItem ItemKeyItem =
+            new MenuItem("Item", "Item").SetValue(new AbilityToggler(itemsDict));
+        private static readonly MenuItem EnableKeyItem =
+            new MenuItem("Enable", "Enable").SetValue(true);
+        private static readonly MenuItem PhaseDistanceItem = 
+            new MenuItem("Phase Distance", "Phase Distance").SetValue(new Slider(750, 500, 1000));
 
 
 
@@ -53,11 +54,11 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
         }
 
-        //BUGGY SINCE IF STOP OR HOLD IS PRESSED PHASE TRIGGERED.
+
         private static void Player_OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (sender == null) return;
-            
+
             if (args.Order.ToString() != "MoveLocation") return;
             if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
             {
@@ -81,7 +82,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
             if ((!Menu.Item("Enable").GetValue<bool>()) || !Game.IsInGame || player == null || me == null || Game.IsChatOpen || Game.IsWatchingGame || Game.IsPaused || me.IsChanneling()) return;
 
-            if (!me.IsInvisible())
+            if (!me.IsInvisible() || me.Name.Equals("npc_dota_hero_riki"))
             {
                 AutoMidas(me);
                 AutoTalon(me);
@@ -112,7 +113,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
             Item ring = bas != null ? bas : aqu;
 
 
-            
+
 
             if ((bas != null || aqu != null))
             {
@@ -121,10 +122,10 @@ new MenuItem("Enable", "Enable").SetValue(true);
                 IEnumerable<Hero> enemies = ObjectManager.GetEntitiesParallel<Hero>().Where(x => x.Team != me.Team && x.IsAlive && x.Health > 0 && x.IsSpawned && x.IsVisible && x.Distance2D(me) <= 2000);
 
 
-                
+
                 if (creeps != null && creeps.Any() && enemies != null && enemies.Any())
                 {
-                    
+
                     int maxDmg = enemies.Max(x => x.MaximumDamage + x.BonusDamage);
                     int minDmg = enemies.Min(x => x.MinimumDamage + x.BonusDamage);
 
@@ -173,7 +174,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
             double EHP = creep.Health / dmgMult;
             return EHP;
 
-            
+
 
         }
 
@@ -215,7 +216,7 @@ new MenuItem("Enable", "Enable").SetValue(true);
 
                 if (bottle != null && bottle.CanBeCasted() && !me.IsInvisible() && !me.IsChanneling() && bottle.Cooldown <= 0)
                 {
-                    
+
                     IEnumerable<Hero> allies = ObjectManager.GetEntities<Hero>().Where(x => x.Team == me.Team && x.IsAlive && (x.Health < x.MaximumHealth || x.Mana < x.MaximumMana) && x.Distance2D(me) <= (castRange + 200) && x.IsVisible && x.IsSpawned && !x.HasModifier("modifier_bottle_regeneration") && !x.IsIllusion);
                     Unit myFountain = ObjectManager.GetEntities<Unit>().Where(x => x.Name == "dota_fountain" && x.Team.Equals(me.Team)).MinOrDefault(x => x.Distance2D(me));
 
@@ -232,11 +233,11 @@ new MenuItem("Enable", "Enable").SetValue(true);
                                 }
                             }
                         }
-                       
+
                         else
                         {
                             //Game.GameTime
-                            
+
                             if (Utils.SleepCheck("bottle"))
                             {
                                 bottle.UseAbility(me);
