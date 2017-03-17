@@ -391,7 +391,7 @@
                 if (!(damageNeeded < 0) || !(me.Distance2D(enemy) < spellRange) || !meCanSurvive(enemy, me, cullingBlade, damageDone)) continue;
 
 
-                castSpell(cullingBlade, enemy);
+                CastSpell(cullingBlade, enemy);
                 //break; //what is this for?? commented it to optimize.
             }
 
@@ -419,7 +419,7 @@
             return !(me.Health < me.DamageTaken((spell.ManaCost * (float)1.75), DamageType.Magical, enemy));
         }
 
-        private static void castSpell(Ability spell, Unit target)
+        private static void CastSpell(Ability spell, Unit target)
         {
             if (spell.Cooldown > 0) return;
 
@@ -458,7 +458,7 @@
             var dmg = Damage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
             var agh = me.FindItem("item_ultimate_scepter");
 
-            if (agh != null)//if (me.HasItem(ClassID.CDOTA_Item_UltimateScepter))
+            if (agh != null)
             {
                 dmg = Adamage[Convert.ToInt32(me.Spellbook.Spell4.Level - 1)];
             }
@@ -468,7 +468,6 @@
             {
                 me.Stop();
                 me.Attack(vhero);
-                //vhero = null; //new Unit();
             }
         }
 
