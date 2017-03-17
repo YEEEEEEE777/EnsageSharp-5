@@ -57,7 +57,8 @@ new MenuItem("Enable", "Enable").SetValue(true);
         private static void Player_OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
             if (sender == null) return;
-
+            
+            if (args.Order.ToString() != "MoveLocation") return;
             if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
             {
                 AutoPhase(me);
