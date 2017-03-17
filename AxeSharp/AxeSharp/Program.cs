@@ -1,4 +1,4 @@
-﻿namespace CullingBlade
+﻿namespace AxeSharp
 {
     using System;
     using System.Collections.Generic;
@@ -44,7 +44,7 @@
 
 
 
-        private static readonly Menu Menu = new Menu("CullingBlade", "CullingBlade", true, "npc_dota_hero_axe", true);
+        private static readonly Menu Menu = new Menu("AxeSharp", "AxeSharp", true, "npc_dota_hero_axe", true);
 
 
 
@@ -102,7 +102,7 @@
                 me = ObjectManager.LocalHero;
                 if (player == null || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Axe) return;
                 _killStealEnabled = true;
-                Console.WriteLine("[CullingBlade: Loaded!]");
+                Console.WriteLine("[AxeSharp: Loaded!]");
             }
 
 
@@ -119,7 +119,7 @@
 
                 HeroJumpPosDictionary.Clear();
                 HeroEnemyNearbyDictionary.Clear();
-                Console.WriteLine("[CullingBlade: UnLoaded!]");
+                Console.WriteLine("[AxeSharp: UnLoaded!]");
                 return;
             }
 
