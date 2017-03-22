@@ -273,7 +273,8 @@
             var enemyStick = target.FindItem("item_magic_stick");
             var enemyWand = target.FindItem("item_magic_wand");
 
-            if (enemyStick == null && enemyWand == null) return Convert.ToDouble(0);
+            if (target.HasModifier("modifier_axe_berserkers_call") || target.IsStunned()) return Convert.ToDouble(0);
+            if ((enemyStick == null && enemyWand == null)) return Convert.ToDouble(0);
 
             else
             {
