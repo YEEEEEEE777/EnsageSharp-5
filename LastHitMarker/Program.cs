@@ -13,6 +13,8 @@ using Ensage.Common.Objects;
 using Ensage.Common.AbilityInfo;
 
 
+using SharpDX.Mathematics.Interop;
+using SharpDX.Mathematics;
 using SharpDX;
 
 
@@ -50,9 +52,9 @@ namespace LastHitMarker
 
             var player = ObjectManager.LocalPlayer;
             var me = player.Hero;
-            var battleFury = me.HasItem(ClassID.CDOTA_Item_Battlefury);
-            var quellingBlade = me.HasItem(ClassID.CDOTA_Item_QuellingBlade);
-            var talon = me.HasItem(ClassID.CDOTA_Item_Iron_Talon);
+            var battleFury = me.HasItem(ClassId.CDOTA_Item_Battlefury);
+            var quellingBlade = me.HasItem(ClassId.CDOTA_Item_QuellingBlade);
+            var talon = me.HasItem(ClassId.CDOTA_Item_Iron_Talon);
             minDamage = me.MinimumDamage + me.BonusDamage;
             maxDamage = me.MaximumDamage + me.BonusDamage;
 
@@ -102,20 +104,20 @@ namespace LastHitMarker
 
             //List of Allied Tier 1 Towers
             var allyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
-                tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                tower.ClassId == ClassId.CDOTA_BaseNPC_Tower
                 && tower.Team == player.Team
                 && tower.MaximumDamage == 120).ToList();
 
             //List of Enemy Towers
             var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
-                tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                tower.ClassId == ClassId.CDOTA_BaseNPC_Tower
                 && tower.Team != player.Team).ToList();
 
 
             //List of Creeps
             var creeps = ObjectManager.GetEntitiesParallel<Creep>().Where(creep =>
-                (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege)
+                (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane
+                || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege)
                 && creep.Team != player.Team
                 && creep.IsAlive
                 && creep.IsVisible
@@ -158,7 +160,7 @@ namespace LastHitMarker
 
 
                     //Anti-Mage exception with ManaBurn
-                    if (me.ClassID == ClassID.CDOTA_Unit_Hero_AntiMage && creep.Mana > 0 && me.Spellbook.Spell1.Level > 0 && creep.Health > 0)
+                    if (me.ClassId == ClassId.CDOTA_Unit_Hero_AntiMage && creep.Mana > 0 && me.Spellbook.Spell1.Level > 0 && creep.Health > 0)
                     {
                         if (creep.Health < (minDamageCreep * (1 - creep.DamageResist)) + manaBurn[me.Spellbook.Spell1.Level])
                         {
@@ -213,7 +215,7 @@ namespace LastHitMarker
                 List<Unit> creeps ;
             try
             {
-                creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => (creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane || creep.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
+                creeps = ObjectManager.GetEntitiesParallel<Unit>().Where(creep => (creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Lane || creep.ClassId == ClassId.CDOTA_BaseNPC_Creep_Siege) && creep.IsAlive
                     && creep.IsVisible
                     && creep.IsSpawned).ToList();
 
@@ -224,7 +226,7 @@ namespace LastHitMarker
             }
 
                 var enemyTowers = ObjectManager.GetEntitiesParallel<Building>().Where(tower =>
-                    tower.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                    tower.ClassId == ClassId.CDOTA_BaseNPC_Tower
                     && tower.Team != player.Team).ToList();
 
                 foreach (var tower in enemyTowers)

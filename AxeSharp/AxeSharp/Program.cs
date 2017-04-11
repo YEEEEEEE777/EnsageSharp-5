@@ -100,7 +100,7 @@
                 if (!Game.IsInGame) return;
                 player = ObjectManager.LocalPlayer;
                 me = ObjectManager.LocalHero;
-                if (player == null || me == null || me.ClassID != ClassID.CDOTA_Unit_Hero_Axe) return;
+                if (player == null || me == null || me.ClassId != ClassId.CDOTA_Unit_Hero_Axe) return;
                 _killStealEnabled = true;
                 Console.WriteLine("[AxeSharp: Loaded!]");
             }
@@ -151,7 +151,7 @@
             {
 
 
-                var damageAmp = (me.HasItem(ClassID.CDOTA_Item_Aether_Lens) ? ((me.TotalIntelligence / 16) * 0.01) + 0.05 : ((me.TotalIntelligence / 16) * 0.01));
+                var damageAmp = (me.HasItem(ClassId.CDOTA_Item_Aether_Lens) ? ((me.TotalIntelligence / 16) * 0.01) + 0.05 : ((me.TotalIntelligence / 16) * 0.01));
                 //Initialize.
                 var dagon = me.Inventory.Items.FirstOrDefault(item => item.Name.Contains("item_dagon"));
                 var shiva = me.FindItem("item_shivas_guard");
@@ -186,7 +186,7 @@
 
                 //Spins by Creeps.
                 int creepCount = creeps.Count() - 1; //Remove the hero itself.
-                var creepNumAtks = Math.Round(holdDur) * creepCount * (me.HasItem(ClassID.CDOTA_Item_Shivas_Guard) ? 0.55 : 1);
+                var creepNumAtks = Math.Round(holdDur) * creepCount * (me.HasItem(ClassId.CDOTA_Item_Shivas_Guard) ? 0.55 : 1);
                 var creepSpins = (creepNumAtks / 4); //4 is the Most Probable N.
                 var trueCreepSpins = Math.Min(spinsBeforeDeath, creepSpins);
 
@@ -234,7 +234,7 @@
 
 
                     //Reflected Radiance Damage.
-                    var enemyDamageAmp = (enemy.HasItem(ClassID.CDOTA_Item_Aether_Lens) ? ((enemy.TotalIntelligence / 16) * 0.01) + 0.05 : ((enemy.TotalIntelligence / 16) * 0.01));
+                    var enemyDamageAmp = (enemy.HasItem(ClassId.CDOTA_Item_Aether_Lens) ? ((enemy.TotalIntelligence / 16) * 0.01) + 0.05 : ((enemy.TotalIntelligence / 16) * 0.01));
                     var radianceDmg = (enemyRadiance == null ? 0 : 50 * (1 + enemyDamageAmp) * (1 - enemy.MagicDamageResist) * holdDur);
 
 
@@ -479,7 +479,7 @@
 
         private static float MorphMustDie(Hero target, float value)
         {
-            if (target.ClassID != ClassID.CDOTA_Unit_Hero_Morphling) return 0;
+            if (target.ClassId != ClassId.CDOTA_Unit_Hero_Morphling) return 0;
 
             var morphLevel = target.Spellbook.Spell3.Level;
             if (morphLevel <= 0) return 0;

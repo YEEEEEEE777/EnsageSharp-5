@@ -36,7 +36,7 @@
             int position = 6; //Instantiated to 6 so default position is "N/A", number is arbitrary.
             string role;
 
-            string steamID = p.PlayerSteamID.ToString();
+            string steamID = p.PlayerSteamId .ToString();
             var personalURL = "https://yasp.co/players/" + steamID + "/counts";
             string data = pbClient.DownloadString(personalURL);
 
@@ -99,9 +99,9 @@
                     break;
             }
 
-            MMRDict.Add(p.PlayerSteamID, trueMMR);
-            WRDict.Add(p.PlayerSteamID, winRate);
-            RoleDict.Add(p.PlayerSteamID, role);
+            MMRDict.Add(p.PlayerSteamId , trueMMR);
+            WRDict.Add(p.PlayerSteamId , winRate);
+            RoleDict.Add(p.PlayerSteamId , role);
 
             Console.WriteLine("--------------------------");
             Console.WriteLine("Name:" + " " + p.Name);

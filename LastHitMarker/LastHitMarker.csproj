@@ -69,19 +69,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ensage">
-      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\Ensage.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\dKZgzbhX0\References\Ensage.dll</HintPath>
     </Reference>
     <Reference Include="Ensage.Common">
-      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\Ensage.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Ensage.Menu">
-      <HintPath>C:\Program Files (x86)\PlaySharp2\System\Ensage.Menu.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\dKZgzbhX0\References\Ensage.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\SharpDX.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\dKZgzbhX0\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>C:\Program Files (x86)\pNADGDqV22\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\dKZgzbhX0\References\SharpDX.Direct3D9.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics">
+      <HintPath>C:\Program Files (x86)\dKZgzbhX0\References\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
