@@ -59,7 +59,7 @@ namespace AutoItemSharp
         {
             if (sender == null) return;
 
-            if (args.Order.ToString() != "MoveLocation") return;
+            if (args.OrderId.ToString() != "MoveLocation") return;
             if (me.Distance2D(args.TargetPosition) >= Menu.Item("Phase Distance").GetValue<Slider>().Value)
             {
                 AutoPhase(me);
@@ -385,12 +385,12 @@ namespace AutoItemSharp
                 Unit ward = ObjectManager.GetEntities<Unit>()
                     .FirstOrDefault(
                         x =>
-                            (x.ClassID == ClassID.CDOTA_NPC_Observer_Ward ||
-                             x.ClassID == ClassID.CDOTA_NPC_Observer_Ward_TrueSight || x.ClassID == ClassID.CDOTA_NPC_TechiesMines || x.ClassID == ClassID.CDOTA_NPC_Treant_EyesInTheForest)
+                            (x.ClassId == ClassId.CDOTA_NPC_Observer_Ward ||
+                             x.ClassId == ClassId.CDOTA_NPC_Observer_Ward_TrueSight || x.ClassId == ClassId.CDOTA_NPC_TechiesMines || x.ClassId == ClassId.CDOTA_NPC_Treant_EyesInTheForest)
                             && x.Team != me.Team && unit.NetworkPosition.Distance2D(x.NetworkPosition) < cutRange &&
                             x.IsVisible && x.IsAlive);
 
-                if (ward != null && !unit.IsChanneling() && Utils.SleepCheck("cut") && cutter != null && !((cutter.Name == "item_tango_single" || cutter.Name == "item_tango") && ward.ClassID == ClassID.CDOTA_NPC_TechiesMines))
+                if (ward != null && !unit.IsChanneling() && Utils.SleepCheck("cut") && cutter != null && !((cutter.Name == "item_tango_single" || cutter.Name == "item_tango") && ward.ClassId == ClassId.CDOTA_NPC_TechiesMines))
                 {
                     cutter.UseAbility(ward);
                     Utils.Sleep(250, "cut");

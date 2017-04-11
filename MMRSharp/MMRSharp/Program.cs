@@ -122,7 +122,7 @@ namespace MMRSharp
 
                 if ((!_isExecutedFirst && _isPressedFirst))
                 {
-                    List<Player> players = ObjectManager.GetEntities<Player>().Where(x => x.Team != Team.Observer).OrderBy(x => x.ID).ToList(); // (x.Team == Team.Radiant || x.Team == Team.Dire)
+                    List<Player> players = ObjectManager.GetEntities<Player>().Where(x => x.Team != Team.Observer).OrderBy(x => x.Id).ToList(); // (x.Team == Team.Radiant || x.Team == Team.Dire)
                     Parallel.ForEach(players, player => Analyze(player));
                     _isExecutedFirst = true;
                 }
@@ -198,7 +198,7 @@ namespace MMRSharp
                 {
 
                     //Player Color.
-                    SharpDX.Color playerColor = SelectColor(player.ID);
+                    SharpDX.Color playerColor = SelectColor(player.Id);
                     string mmr;
                     string wr;
                     string bestHero;
@@ -211,19 +211,19 @@ namespace MMRSharp
                         Vector2 startPosWRR = new Vector2(textPosX + 1 * horDist, textPosY + player.TeamSlot * vertDist);
                         Vector2 startPosRoleR = new Vector2(textPosX + 2 * horDist, textPosY + player.TeamSlot * vertDist);
 
-                        if (BestHeroesDict.TryGetValue(player.PlayerSteamID, out bestHero))
+                        if (BestHeroesDict.TryGetValue(player.PlayerSteamId , out bestHero))
                         {
-                            //Console.WriteLine(BestHeroesDict[p.PlayerSteamID][0]);
+                            //Console.WriteLine(BestHeroesDict[p.PlayerSteamId ][0]);
                             textFont.DrawText(null, bestHero, (int)startPosRoleR.X, (int)startPosRoleR.Y, textColor);
                         }
 
-                        if (MMRDict.TryGetValue(player.PlayerSteamID, out mmr))
+                        if (MMRDict.TryGetValue(player.PlayerSteamId , out mmr))
                         {
                             textFont.DrawText(null, "🔲", (int)startPosMMRR.X - boxDist, (int)startPosMMRR.Y, playerColor);
                             textFont.DrawText(null, mmr, (int)startPosMMRR.X, (int)startPosMMRR.Y, textColor);
                         }
 
-                        if (WinRateDict.TryGetValue(player.PlayerSteamID, out wr))
+                        if (WinRateDict.TryGetValue(player.PlayerSteamId , out wr))
                         {
                             textFont.DrawText(null, wr + "%", (int)startPosWRR.X, (int)startPosWRR.Y, textColor);
                         }
@@ -242,19 +242,19 @@ namespace MMRSharp
                         Vector2 startPosWRD = new Vector2(textPosX + 6 * horDist, textPosY + player.TeamSlot * vertDist);
                         Vector2 startPosRoleD = new Vector2(textPosX + 7 * horDist, textPosY + player.TeamSlot * vertDist);
 
-                        if (BestHeroesDict.TryGetValue(player.PlayerSteamID, out bestHero))
+                        if (BestHeroesDict.TryGetValue(player.PlayerSteamId , out bestHero))
                         {
-                            //Console.WriteLine(BestHeroesDict[p.PlayerSteamID][0]);
+                            //Console.WriteLine(BestHeroesDict[p.PlayerSteamId ][0]);
                             textFont.DrawText(null, bestHero, (int)startPosRoleD.X, (int)startPosRoleD.Y, textColor);
                         }
 
-                        if (MMRDict.TryGetValue(player.PlayerSteamID, out mmr))
+                        if (MMRDict.TryGetValue(player.PlayerSteamId , out mmr))
                         {
                             textFont.DrawText(null, "🔲", (int)startPosMMRD.X - boxDist, (int)startPosMMRD.Y, playerColor);
                             textFont.DrawText(null, mmr, (int)startPosMMRD.X, (int)startPosMMRD.Y, textColor);
                         }
 
-                        if (WinRateDict.TryGetValue(player.PlayerSteamID, out wr))
+                        if (WinRateDict.TryGetValue(player.PlayerSteamId , out wr))
                         {
                             textFont.DrawText(null, wr + "%", (int)startPosWRD.X, (int)startPosWRD.Y, textColor);
                         }
@@ -283,7 +283,7 @@ namespace MMRSharp
                     var soloCompetitiveRank = deserializedJSONObject["solo_competitive_rank"].ToString() == "" ? 0 : int.Parse(deserializedJSONObject["solo_competitive_rank"].ToString());
                     var mmrEstimate = deserializedJSONObject["mmr_estimate"]["estimate"].ToString() == "" ? 0 : int.Parse(deserializedJSONObject["mmr_estimate"]["estimate"].ToString());
                     var trueMMR = soloCompetitiveRank > mmrEstimate ? soloCompetitiveRank.ToString() : mmrEstimate.ToString();
-                    MMRDict.Add(player.PlayerSteamID, trueMMR);
+                    MMRDict.Add(player.PlayerSteamId , trueMMR);
 
                     /*
                     Console.WriteLine("soloCompetitiveRank:" + soloCompetitiveRank);
@@ -314,7 +314,7 @@ namespace MMRSharp
                     }
 
                     var firstBestHeroName = resultArray[int.Parse(firstBestHeroID)].localized_name; //.heroes.Where(hero => hero.id == int.Parse(firstBestHeroID)).Select(hero => hero.localized_name).FirstOrDefault();
-                    BestHeroesDict.Add(player.PlayerSteamID, firstBestHeroName);
+                    BestHeroesDict.Add(player.PlayerSteamId , firstBestHeroName);
 
                     /*
                     Console.WriteLine("firstBestHero: " + firstBestHeroName);
@@ -328,7 +328,7 @@ namespace MMRSharp
                     string win = deserializedJSONObject["win"];
                     string lose = deserializedJSONObject["lose"];
                     var winPercentage = Math.Round(((float.Parse(win) / (float.Parse(win) + float.Parse(lose))) * 100), 0).ToString();
-                    WinRateDict.Add(player.PlayerSteamID, winPercentage);
+                    WinRateDict.Add(player.PlayerSteamId , winPercentage);
 
                     /*
                     Console.WriteLine("win: " + win);
@@ -348,7 +348,7 @@ namespace MMRSharp
         private static async Task Analyze(Player player)
         {
 
-            string steamID = player.PlayerSteamID.ToString();
+            string steamID = player.PlayerSteamId .ToString();
             var playerHeroesURL = "https://api.opendota.com/api/players/" + steamID + "/heroes?date=30&win=1";
             var playerURL = "https://api.opendota.com/api/players/" + steamID;
             var playerWinLoseURL = "https://api.opendota.com/api/players/" + steamID + "/wl?date=30";
